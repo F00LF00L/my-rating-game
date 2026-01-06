@@ -3,69 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת דירוג תמונות</title>
+    <title>מערכת דירוג תמונות - Live</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        img { max-width: 100%; border-radius: 10px; margin-bottom: 20px; max-height: 400px; object-fit: contain; }
-        .rating-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        button { padding: 15px; border: none; border-radius: 8px; cursor: pointer; background: #007bff; color: white; font-weight: bold; }
-        button:disabled { background: #ccc; }
-        .admin-panel { margin-top: 30px; border-top: 2px solid #ccc; padding-top: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 600px; margin: auto; }
+        h2 { margin-top: 0; color: #007bff; }
+        img { max-width: 100%; border-radius: 10px; margin-bottom: 20px; max-height: 450px; object-fit: contain; border: 1px solid #ddd; background: #eee; min-height: 200px; }
+        .rating-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
+        button { padding: 15px 5px; border: none; border-radius: 8px; cursor: pointer; background: #007bff; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); background: #0056b3; }
+        .admin-panel { margin-top: 30px; border-top: 3px solid #007bff; padding-top: 20px; background: #e9ecef; border-radius: 10px; padding: 15px; }
         .hidden { display: none; }
-        #stats { font-size: 1.2rem; font-weight: bold; color: #28a745; }
+        #stats { font-size: 1.4rem; font-weight: bold; color: #28a745; margin: 15px 0; }
+        .voted-msg { font-size: 1.2rem; color: #666; font-weight: bold; padding: 20px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 id="img-title">טוען תמונה...</h2>
-    <img id="main-image" src="" alt="תמונה">
+    <h2 id="img-title">מתחבר לשרת...</h2>
+    <img id="main-image" src="" alt="טוען תמונה...">
     
     <div id="user-view">
-        <p>דרגו את התמונה (1-10):</p>
-        <div class="rating-btns" id="rating-area">
-            </div>
-        <p id="voted-msg" class="hidden">הדירוג נשלח! המתינו לתמונה הבאה...</p>
+        <div id="rating-container">
+            <p>דרגו את התמונה (1-10):</p>
+            <div class="rating-btns" id="rating-area"></div>
+        </div>
+        <p id="voted-msg" class="voted-msg hidden">✅ הדירוג נשלח! המתינו לתמונה הבאה...</p>
     </div>
 
     <div id="admin-view" class="admin-panel hidden">
-        <h3>לוח בקרה אדמין</h3>
-        <button onclick="prevImage()">⬅️ קודם</button>
-        <span id="img-index">1 / 100</span>
-        <button onclick="nextImage()">הבא ➡️</button>
+        <h3>🔧 לוח בקרה מנהל</h3>
+        <div style="margin-bottom: 15px;">
+            <button onclick="prevImage()" style="background:#6c757d;">⬅️ הקודמת</button>
+            <span id="img-index" style="font-size: 1.5rem; margin: 0 15px; font-weight: bold;">1 / 100</span>
+            <button onclick="nextImage()" style="background:#6c757d;">הבאה ➡️</button>
+        </div>
         <div id="stats">ממוצע נוכחי: <span id="avg-score">0</span></div>
-        <button style="background:red; margin-top:10px;" onclick="showSummary()">הצג תמונה מנצחת</button>
+        <hr>
+        <button style="background:#dc3545; width: 100%;" onclick="showSummary()">🏆 הצג תמונה מנצחת</button>
     </div>
 </div>
 
 <script>
-    // --- הגדרות FIREBASE (החלף בפרטים שלך) ---
+    // הגדרות ה-Firebase שלך (כבר מוטמעות):
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
+        authDomain: "my-rating-game.firebaseapp.com",
+        projectId: "my-rating-game",
+        storageBucket: "my-rating-game.firebasestorage.app",
+        messagingSenderId: "911209380858",
+        appId: "1:911209380858:web:ff65851ba5c95b82844243",
+        databaseURL: "https://my-rating-game-default-rtdb.firebaseio.com"
     };
     
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- הגדרות משחק ---
-    const totalImages = 100;
-    let isAdmin = window.location.search.includes('admin=true');
+    const totalImages = 100; // וודא שיש לך באמת 100 תמונות
+    const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
     const indexElement = document.getElementById('img-index');
     const ratingArea = document.getElementById('rating-area');
+    const ratingContainer = document.getElementById('rating-container');
+    const votedMsg = document.getElementById('voted-msg');
 
     if (isAdmin) document.getElementById('admin-view').classList.remove('hidden');
 
-    // יצירת כפתורי דירוג
     for (let i = 1; i <= 10; i++) {
         let btn = document.createElement('button');
         btn.innerText = i;
@@ -73,36 +79,37 @@
         ratingArea.appendChild(btn);
     }
 
-    // סנכרון תמונה נוכחית מהשרת
+    // סנכרון תמונה ונתונים
     db.ref('currentImage').on('value', (snapshot) => {
         let idx = snapshot.val() || 1;
-        imgElement.src = `images/${idx}.jpg`; // וודא שהתמונות בתיקיית images וממוספרות 1-100
+        
+        // --- התיקון כאן: שינוי הסיומת ל-JPG באותיות גדולות ---
+        imgElement.src = `images/jpg-${idx}.JPG`; 
+        
         indexElement.innerText = `${idx} / ${totalImages}`;
         document.getElementById('img-title').innerText = `תמונה ${idx}`;
-        resetUI();
-        updateStats(idx);
+        
+        ratingContainer.classList.remove('hidden');
+        votedMsg.classList.add('hidden');
+        
+        if (isAdmin) updateStats(idx);
     });
 
     function submitRating(val) {
         db.ref('currentImage').once('value', (snap) => {
             let idx = snap.val() || 1;
             db.ref(`ratings/${idx}`).push(val);
-            document.getElementById('rating-area').classList.add('hidden');
-            document.getElementById('voted-msg').classList.remove('hidden');
+            ratingContainer.classList.add('hidden');
+            votedMsg.classList.remove('hidden');
         });
     }
 
-    function resetUI() {
-        document.getElementById('rating-area').classList.remove('hidden');
-        document.getElementById('voted-msg').classList.add('hidden');
-    }
-
     function nextImage() {
-        db.ref('currentImage').transaction(idx => (idx < totalImages ? idx + 1 : idx));
+        db.ref('currentImage').transaction(idx => (idx < totalImages ? (idx || 1) + 1 : idx));
     }
 
     function prevImage() {
-        db.ref('currentImage').transaction(idx => (idx > 1 ? idx - 1 : idx));
+        db.ref('currentImage').transaction(idx => (idx > 1 ? idx - 1 : 1));
     }
 
     function updateStats(idx) {
@@ -111,9 +118,9 @@
             if (data) {
                 let scores = Object.values(data);
                 let avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2);
-                document.getElementById('avg-score').innerText = avg;
+                document.getElementById('avg-score').innerText = avg + ` (${scores.length} מדרגים)`;
             } else {
-                document.getElementById('avg-score').innerText = "0";
+                document.getElementById('avg-score').innerText = "אין דירוגים עדיין";
             }
         });
     }
@@ -121,13 +128,15 @@
     function showSummary() {
         db.ref('ratings').once('value', (snap) => {
             let all = snap.val();
+            if (!all) return alert("אין נתונים.");
             let winner = {id: 0, avg: 0};
             for (let id in all) {
                 let scores = Object.values(all[id]);
                 let avg = scores.reduce((a, b) => a + b, 0) / scores.length;
                 if (avg > winner.avg) winner = {id, avg};
             }
-            alert(`התמונה המנצחת היא מספר ${winner.id} עם ממוצע של ${winner.avg.toFixed(2)}!`);
+            // עדכון גם בהודעת הניצחון שזה JPG
+            alert(`התמונה המנצחת היא jpg-${winner.id}.JPG עם ממוצע ${winner.avg.toFixed(2)}`);
         });
     }
 </script>
