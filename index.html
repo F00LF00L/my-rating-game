@@ -2,8 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Rating - Full View</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Photo Rating - Professional Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
@@ -13,7 +13,11 @@
             --card-bg: #121212;
             --text: #ffffff;
             --accent: #00ff00;
+            --danger: #ff3333;
         }
+        
+        * { box-sizing: border-box; }
+
         body { 
             font-family: 'Assistant', sans-serif; 
             text-align: center; 
@@ -22,125 +26,139 @@
             padding: 0; 
             color: var(--text);
             height: 100vh;
+            height: 100svh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
-        /* תמונה על כל המסך */
+        /* תמונה מותאמת למסך */
         .img-display-area {
-            flex-grow: 1;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #000;
-            overflow: hidden;
             position: relative;
+            padding: 5px;
+            overflow: hidden;
         }
         
         #main-image { 
             max-width: 100%; 
-            max-height: 100vh; 
+            max-height: 100%;
             object-fit: contain; 
-            transition: opacity 0.4s ease-in-out;
+            transition: opacity 0.3s ease-in-out;
             opacity: 0;
+            border-radius: 4px;
         }
         #main-image.show { opacity: 1; }
 
-        /* כותרת הנחיה בראש המסך */
         .prompt-header {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 25px;
-            border-radius: 30px;
-            font-size: 1.4rem;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: var(--accent);
             z-index: 20;
             border: 1px solid var(--accent);
             white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-align: center;
         }
 
-        /* כותרת מספר תמונה צפה */
+        .welcome-sub {
+            display: block;
+            font-size: 0.85rem;
+            color: #fff;
+            margin-top: 2px;
+        }
+
         .floating-title {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.6);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            bottom: 5px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
             z-index: 10;
             color: #ccc;
         }
 
-        /* אזור שליטה תחתון */
         .controls-area {
             background: var(--card-bg);
-            padding: 15px;
+            padding: 8px;
             border-top: 1px solid #333;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .rating-btns { 
             display: grid; 
             grid-template-columns: repeat(5, 1fr); 
-            gap: 8px; 
-            max-width: 500px;
-            margin: auto;
+            gap: 4px; 
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         button { 
-            height: 55px; 
+            height: 45px; 
             border: none; 
-            border-radius: 10px; 
+            border-radius: 6px; 
             cursor: pointer; 
             color: #000; 
             font-weight: bold; 
-            font-size: 1.2rem; 
+            font-size: 1rem; 
             transition: transform 0.1s;
         }
         button:active { transform: scale(0.95); }
 
-        /* צבעים */
         .btn-1 { background: #ff4d4d; } .btn-2 { background: #ff751a; }
         .btn-3 { background: #ff944d; } .btn-4 { background: #ffad33; }
         .btn-5 { background: #ffd633; } .btn-6 { background: #e6ff33; }
         .btn-7 { background: #bcff33; } .btn-8 { background: #92ff33; }
         .btn-9 { background: #69ff33; } .btn-10 { background: #33ff33; }
 
-        .voted-msg { color: #4db8ff; font-size: 1.3rem; padding: 20px; font-weight: bold; }
+        .voted-msg { color: #4db8ff; font-size: 1.1rem; padding: 10px; font-weight: bold; }
 
-        /* מסך סיכום */
         #summary-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             z-index: 1000;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
             display: none;
         }
         .winner-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 15px;
         }
         .winner-item {
             background: #1a1a1a;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 8px;
+            border-radius: 8px;
             border: 1px solid #333;
         }
-        .winner-item img { width: 100%; border-radius: 5px; }
+        .winner-item img { width: 100%; border-radius: 4px; }
         .rank-1 { grid-column: span 2; border: 2px solid gold; }
         .rank-badge { 
             display: inline-block; 
-            padding: 2px 10px; 
-            border-radius: 10px; 
-            margin-bottom: 5px;
+            padding: 1px 8px; 
+            border-radius: 8px; 
+            margin-bottom: 4px;
+            font-size: 0.8rem;
             font-weight: bold;
         }
         .badge-1 { background: gold; color: #000; }
@@ -148,14 +166,44 @@
         .badge-3 { background: #cd7f32; color: #000; }
 
         .hidden { display: none; }
-        .admin-controls { margin-top: 10px; padding: 10px; border-top: 1px dashed #555; }
+        
+        .admin-controls { 
+            margin-top: 5px; 
+            padding: 8px; 
+            border-top: 1px dashed #444;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+        
+        .admin-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .live-counter {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        .btn-admin { background: #333; color: white; flex: 1; height: 35px; }
+        .btn-reset { background: var(--danger); color: white; width: 100%; margin-top: 5px; height: 35px; font-size: 0.9rem; font-weight: bold; cursor: pointer; }
+        .btn-win { background: var(--accent); color: black; width: 100%; margin-top: 5px; height: 35px; }
     </style>
 </head>
-<body>
+<body onclick="startBackgroundMusic()">
 
-<div id="main-view">
+<audio id="next-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+<div id="main-view" style="height: 100%; display: flex; flex-direction: column;">
     <div class="img-display-area">
-        <div class="prompt-header">בחרו את התמונה המצחיקה ביותר</div>
+        <div class="prompt-header">
+            <span id="prompt-text">דרגו את התמונה המצחיקה ביותר</span>
+            <span class="welcome-sub">שלום לכל משפחת "חשB"</span>
+        </div>
         <div class="floating-title" id="img-title">טוען...</div>
         <img id="main-image" src="" alt="תמונה">
     </div>
@@ -175,32 +223,32 @@
                     <button class="btn-9" onclick="submitRating(9)">9</button>
                     <button class="btn-10" onclick="submitRating(10)">10</button>
                 </div>
+                <div class="live-counter" style="margin-top: 4px;">מדרגים כרגע: <span id="live-voters" style="color:var(--accent)">0</span></div>
             </div>
             <div id="voted-msg" class="voted-msg hidden">הדירוג נשלח! ✅</div>
         </div>
 
         <div id="admin-ui" class="admin-controls hidden">
-            <div style="display:flex; justify-content: space-around; margin-bottom: 10px;">
-                <button onclick="prevImage()" style="background:#333; color:white; width:30%;">⬅️</button>
-                <span id="img-index">1 / 100</span>
-                <button onclick="nextImage()" style="background:#333; color:white; width:30%;">➡️</button>
+            <div class="admin-row">
+                <button class="btn-admin" onclick="prevImage()">⬅️ הקודמת</button>
+                <span id="img-index" style="font-weight:bold; min-width: 60px;">0 / 96</span>
+                <button class="btn-admin" onclick="nextImage()">הבאה ➡️</button>
             </div>
-            <div style="font-size: 0.9rem; color: #aaa;">
-                סך נקודות: <b id="total-score" style="color:var(--accent)">0</b> | 
-                מצביעים: <span id="vote-count">0</span>
+            
+            <div class="admin-row" style="font-size: 0.85rem;">
+                <span>נקודות לתמונה זו: <b id="total-score" style="color:var(--accent)">0</b></span>
+                <button onclick="resetGame()" class="btn-reset">🗑️ איפוס דאטה-בייס</button>
             </div>
-            <button onclick="calculateWinners()" style="background:var(--accent); width:100%; margin-top:10px; height:40px;">🏆 הצג 4 מנצחות</button>
+            
+            <button onclick="calculateWinners()" class="btn-win">🏆 הצג תוצאות סופיות</button>
         </div>
     </div>
 </div>
 
-<!-- מסך סיכום סופי -->
 <div id="summary-screen">
-    <h1>🏆 ארבע התמונות המנצחות</h1>
-    <div class="winner-grid" id="winner-list">
-        <!-- המנצחות יופיעו כאן -->
-    </div>
-    <button onclick="location.reload()" style="margin-top:30px; background:#333; color:white; width:100%;">חזור למשחק</button>
+    <h1 style="font-size: 1.5rem; margin-bottom: 10px;">🏆 המנצחות הגדולות</h1>
+    <div class="winner-grid" id="winner-list"></div>
+    <button onclick="location.reload()" style="margin-top:20px; background:#333; color:white; width:100%; height:45px;">חזור למשחק</button>
 </div>
 
 <script>
@@ -217,70 +265,113 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const totalImages = 100;
+    const totalImages = 96;
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
-    let currentIdx = 1;
+    const nextSound = document.getElementById('next-sound');
+    const bgMusic = document.getElementById('bg-music');
+    let currentIdx = -1;
+    let musicStarted = false;
 
     if (isAdmin) document.getElementById('admin-ui').classList.remove('hidden');
 
+    function startBackgroundMusic() {
+        if (!musicStarted) {
+            bgMusic.volume = 0.2;
+            bgMusic.play().catch(e => console.log("Music blocked"));
+            musicStarted = true;
+        }
+    }
+
     db.ref('currentImage').on('value', (snap) => {
-        currentIdx = snap.val() || 1;
+        const newIdx = snap.val() !== null ? snap.val() : 0;
         
+        if (currentIdx !== -1 && newIdx !== currentIdx) {
+            nextSound.play().catch(e => {});
+        }
+        
+        currentIdx = newIdx;
         imgElement.classList.remove('show');
+        
         setTimeout(() => {
-            imgElement.src = `images/jpg-${currentIdx}.JPG`;
+            imgElement.src = currentIdx === 0 ? `images/welcome.JPG` : `images/jpg-${currentIdx}.JPG`;
             imgElement.onload = () => imgElement.classList.add('show');
-            document.getElementById('img-title').innerText = `תמונה ${currentIdx}`;
-            document.getElementById('img-index').innerText = `${currentIdx} / ${totalImages}`;
             
+            if(currentIdx === 0) {
+                document.getElementById('img-title').innerText = `בדיקת מערכת`;
+            } else {
+                document.getElementById('img-title').innerText = `תמונה ${currentIdx}`;
+            }
+            
+            document.getElementById('img-index').innerText = `${currentIdx} / ${totalImages}`;
             document.getElementById('rating-container').classList.remove('hidden');
             document.getElementById('voted-msg').classList.add('hidden');
             
+            listenToLiveVoters(currentIdx);
             if (isAdmin) updateAdminStats(currentIdx);
-        }, 300);
+        }, 200);
     });
 
+    function listenToLiveVoters(idx) {
+        db.ref(`ratings/${idx}`).on('value', (snap) => {
+            const count = snap.val() ? Object.keys(snap.val()).length : 0;
+            document.getElementById('live-voters').innerText = count;
+        });
+    }
+
     function submitRating(val) {
+        startBackgroundMusic();
         db.ref(`ratings/${currentIdx}`).push(val);
         document.getElementById('rating-container').classList.add('hidden');
         document.getElementById('voted-msg').classList.remove('hidden');
     }
 
-    function nextImage() { db.ref('currentImage').transaction(i => (i < totalImages ? (i || 1) + 1 : i)); }
-    function prevImage() { db.ref('currentImage').transaction(i => (i > 1 ? i - 1 : 1)); }
+    function nextImage() { 
+        db.ref('currentImage').transaction(i => {
+            const next = (i || 0) + 1;
+            return next > totalImages ? i : next;
+        }); 
+    }
+    
+    function prevImage() { 
+        db.ref('currentImage').transaction(i => (i > 0 ? i - 1 : 0)); 
+    }
+
+    function resetGame() {
+        if(confirm("⚠️ פעולה זו תמחק את כל הדירוגים מהדאטה-בייס ותחזיר את המשחק להתחלה. בטוח?")) {
+            db.ref('ratings').remove();
+            db.ref('currentImage').set(0);
+            alert("הדאטה-בייס אופס.");
+        }
+    }
 
     function updateAdminStats(idx) {
         db.ref(`ratings/${idx}`).on('value', (snap) => {
             let data = snap.val();
+            let total = 0;
             if (data) {
-                let scores = Object.values(data);
-                let total = scores.reduce((a, b) => a + b, 0);
-                document.getElementById('total-score').innerText = total;
-                document.getElementById('vote-count').innerText = scores.length;
-            } else {
-                document.getElementById('total-score').innerText = "0";
-                document.getElementById('vote-count').innerText = "0";
+                total = Object.values(data).reduce((a, b) => a + b, 0);
             }
+            document.getElementById('total-score').innerText = total;
         });
     }
 
     function calculateWinners() {
         db.ref('ratings').once('value', (snap) => {
             const allRatings = snap.val();
-            if (!allRatings) return alert("אין מספיק נתונים.");
+            if (!allRatings) return alert("אין עדיין נתוני דירוג.");
 
             let results = [];
             for (let id in allRatings) {
+                if (parseInt(id) === 0) continue;
                 let scores = Object.values(allRatings[id]);
                 let sum = scores.reduce((a, b) => a + b, 0);
                 results.push({ id: id, score: sum });
             }
 
-            // מיון לפי הניקוד הגבוה ביותר
-            results.sort((a, b) => b.score - a.score);
+            if(results.length === 0) return alert("אין מספיק נתונים.");
             
-            // לקיחת 4 הראשונות
+            results.sort((a, b) => b.score - a.score);
             const winners = results.slice(0, 4);
             displayWinners(winners);
         });
@@ -298,8 +389,8 @@
             div.innerHTML = `
                 <span class="rank-badge badge-${rank}">מקום ${rank}</span>
                 <img src="images/jpg-${w.id}.JPG">
-                <div style="margin-top:5px"><b>תמונה ${w.id}</b></div>
-                <div style="color:var(--accent)">ניקוד מצטבר: ${w.score}</div>
+                <div style="margin-top:5px; font-size:0.9rem;"><b>תמונה ${w.id}</b></div>
+                <div style="color:var(--accent); font-size:0.8rem;">ניקוד: ${w.score}</div>
             `;
             list.appendChild(div);
         });
