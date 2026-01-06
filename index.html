@@ -299,7 +299,7 @@
 
 <!-- מקורות סאונד -->
 <audio id="next-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-<audio id="vote-received-sound" src="https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3.mp3"></audio>
+<audio id="vote-received-sound" src="https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3"></audio>
 <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
 
 <div id="hamburger" class="hamburger" onclick="toggleMenu()">
@@ -375,8 +375,8 @@
 </div>
 
 <script>
-    // קישור סאונד מותאם אישית מה-GitHub שלך
-    const CUSTOM_VOTE_SOUND_URL = "https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3.mp3";
+    // קישור סאונד מותאם אישית מה-GitHub שלך (Raw Link)
+    const CUSTOM_VOTE_SOUND_URL = "https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3";
 
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
@@ -417,7 +417,7 @@
         document.getElementById('admin-notice').classList.remove('hidden');
         document.getElementById('controls-bar').classList.add('admin-mode');
         
-        // השמעת סאונד כשיש שינוי בנתוני הדירוג
+        // האזנה לדירוגים חדשים להשמעת סאונד
         db.ref('ratings').on('child_changed', (snapshot) => {
             if (firstLoadDone) playVoteSound();
         });
@@ -425,12 +425,18 @@
             if (firstLoadDone) playVoteSound();
         });
         
-        setTimeout(() => { firstLoadDone = true; }, 1500);
+        // מניעת רצף סאונד בטעינה הראשונית של הדף
+        setTimeout(() => { firstLoadDone = true; }, 2000);
     }
 
     function playVoteSound() {
         voteSound.currentTime = 0;
-        voteSound.play().catch(e => console.log("Sound error:", e));
+        const playPromise = voteSound.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Auto-play was prevented. Click anywhere to enable sound.");
+            });
+        }
     }
 
     function toggleMenu() {
@@ -445,8 +451,11 @@
             bgMusic.play().catch(() => {});
             musicStarted = true;
         }
-        // פתיחת ערוץ הסאונד בדפדפן
-        voteSound.play().then(() => { voteSound.pause(); voteSound.currentTime = 0; }).catch(() => {});
+        // "חימום" ערוץ הסאונד כדי לאפשר השמעה אוטומטית בהמשך
+        voteSound.play().then(() => { 
+            voteSound.pause(); 
+            voteSound.currentTime = 0; 
+        }).catch(() => {});
     }
 
     function shuffleArray(array) {
