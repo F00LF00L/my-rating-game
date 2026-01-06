@@ -3,52 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת דירוג תמונות - Live</title>
+    <title>Photo Rating - Full View</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 600px; margin: auto; }
-        h2 { margin-top: 0; color: #007bff; }
-        img { max-width: 100%; border-radius: 10px; margin-bottom: 20px; max-height: 450px; object-fit: contain; border: 1px solid #ddd; background: #eee; min-height: 200px; }
-        .rating-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
-        button { padding: 15px 5px; border: none; border-radius: 8px; cursor: pointer; background: #007bff; color: white; font-weight: bold; font-size: 1.1rem; transition: transform 0.1s; }
-        button:active { transform: scale(0.95); background: #0056b3; }
-        .admin-panel { margin-top: 30px; border-top: 3px solid #007bff; padding-top: 20px; background: #e9ecef; border-radius: 10px; padding: 15px; }
+        :root {
+            --bg-color: #000000;
+            --card-bg: #121212;
+            --text: #ffffff;
+            --accent: #00ff00;
+        }
+        body { 
+            font-family: 'Assistant', sans-serif; 
+            text-align: center; 
+            background: var(--bg-color); 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* תמונה על כל המסך */
+        .img-display-area {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #main-image { 
+            max-width: 100%; 
+            max-height: 100vh; 
+            object-fit: contain; 
+            transition: opacity 0.4s ease-in-out;
+            opacity: 0;
+        }
+        #main-image.show { opacity: 1; }
+
+        /* כותרת הנחיה בראש המסך */
+        .prompt-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--accent);
+            z-index: 20;
+            border: 1px solid var(--accent);
+            white-space: nowrap;
+        }
+
+        /* כותרת מספר תמונה צפה */
+        .floating-title {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 10;
+            color: #ccc;
+        }
+
+        /* אזור שליטה תחתון */
+        .controls-area {
+            background: var(--card-bg);
+            padding: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .rating-btns { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px; 
+            max-width: 500px;
+            margin: auto;
+        }
+
+        button { 
+            height: 55px; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            color: #000; 
+            font-weight: bold; 
+            font-size: 1.2rem; 
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.95); }
+
+        /* צבעים */
+        .btn-1 { background: #ff4d4d; } .btn-2 { background: #ff751a; }
+        .btn-3 { background: #ff944d; } .btn-4 { background: #ffad33; }
+        .btn-5 { background: #ffd633; } .btn-6 { background: #e6ff33; }
+        .btn-7 { background: #bcff33; } .btn-8 { background: #92ff33; }
+        .btn-9 { background: #69ff33; } .btn-10 { background: #33ff33; }
+
+        .voted-msg { color: #4db8ff; font-size: 1.3rem; padding: 20px; font-weight: bold; }
+
+        /* מסך סיכום */
+        #summary-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        .winner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .winner-item {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .winner-item img { width: 100%; border-radius: 5px; }
+        .rank-1 { grid-column: span 2; border: 2px solid gold; }
+        .rank-badge { 
+            display: inline-block; 
+            padding: 2px 10px; 
+            border-radius: 10px; 
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .badge-1 { background: gold; color: #000; }
+        .badge-2 { background: silver; color: #000; }
+        .badge-3 { background: #cd7f32; color: #000; }
+
         .hidden { display: none; }
-        #stats { font-size: 1.4rem; font-weight: bold; color: #28a745; margin: 15px 0; }
-        .voted-msg { font-size: 1.2rem; color: #666; font-weight: bold; padding: 20px; }
+        .admin-controls { margin-top: 10px; padding: 10px; border-top: 1px dashed #555; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2 id="img-title">מתחבר לשרת...</h2>
-    <img id="main-image" src="" alt="טוען תמונה...">
-    
-    <div id="user-view">
-        <div id="rating-container">
-            <p>דרגו את התמונה (1-10):</p>
-            <div class="rating-btns" id="rating-area"></div>
-        </div>
-        <p id="voted-msg" class="voted-msg hidden">✅ הדירוג נשלח! המתינו לתמונה הבאה...</p>
+<div id="main-view">
+    <div class="img-display-area">
+        <div class="prompt-header">בחרו את התמונה המצחיקה ביותר</div>
+        <div class="floating-title" id="img-title">טוען...</div>
+        <img id="main-image" src="" alt="תמונה">
     </div>
 
-    <div id="admin-view" class="admin-panel hidden">
-        <h3>🔧 לוח בקרה מנהל</h3>
-        <div style="margin-bottom: 15px;">
-            <button onclick="prevImage()" style="background:#6c757d;">⬅️ הקודמת</button>
-            <span id="img-index" style="font-size: 1.5rem; margin: 0 15px; font-weight: bold;">1 / 100</span>
-            <button onclick="nextImage()" style="background:#6c757d;">הבאה ➡️</button>
+    <div class="controls-area">
+        <div id="user-ui">
+            <div id="rating-container">
+                <div class="rating-btns">
+                    <button class="btn-1" onclick="submitRating(1)">1</button>
+                    <button class="btn-2" onclick="submitRating(2)">2</button>
+                    <button class="btn-3" onclick="submitRating(3)">3</button>
+                    <button class="btn-4" onclick="submitRating(4)">4</button>
+                    <button class="btn-5" onclick="submitRating(5)">5</button>
+                    <button class="btn-6" onclick="submitRating(6)">6</button>
+                    <button class="btn-7" onclick="submitRating(7)">7</button>
+                    <button class="btn-8" onclick="submitRating(8)">8</button>
+                    <button class="btn-9" onclick="submitRating(9)">9</button>
+                    <button class="btn-10" onclick="submitRating(10)">10</button>
+                </div>
+            </div>
+            <div id="voted-msg" class="voted-msg hidden">הדירוג נשלח! ✅</div>
         </div>
-        <div id="stats">ממוצע נוכחי: <span id="avg-score">0</span></div>
-        <hr>
-        <button style="background:#dc3545; width: 100%;" onclick="showSummary()">🏆 הצג תמונה מנצחת</button>
+
+        <div id="admin-ui" class="admin-controls hidden">
+            <div style="display:flex; justify-content: space-around; margin-bottom: 10px;">
+                <button onclick="prevImage()" style="background:#333; color:white; width:30%;">⬅️</button>
+                <span id="img-index">1 / 100</span>
+                <button onclick="nextImage()" style="background:#333; color:white; width:30%;">➡️</button>
+            </div>
+            <div style="font-size: 0.9rem; color: #aaa;">
+                סך נקודות: <b id="total-score" style="color:var(--accent)">0</b> | 
+                מצביעים: <span id="vote-count">0</span>
+            </div>
+            <button onclick="calculateWinners()" style="background:var(--accent); width:100%; margin-top:10px; height:40px;">🏆 הצג 4 מנצחות</button>
+        </div>
     </div>
 </div>
 
+<!-- מסך סיכום סופי -->
+<div id="summary-screen">
+    <h1>🏆 ארבע התמונות המנצחות</h1>
+    <div class="winner-grid" id="winner-list">
+        <!-- המנצחות יופיעו כאן -->
+    </div>
+    <button onclick="location.reload()" style="margin-top:30px; background:#333; color:white; width:100%;">חזור למשחק</button>
+</div>
+
 <script>
-    // הגדרות ה-Firebase המעודכנות שלך (כולל ה-URL הנכון של אירופה):
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
         authDomain: "my-rating-game.firebaseapp.com",
@@ -65,79 +220,92 @@
     const totalImages = 100;
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
-    const indexElement = document.getElementById('img-index');
-    const ratingArea = document.getElementById('rating-area');
-    const ratingContainer = document.getElementById('rating-container');
-    const votedMsg = document.getElementById('voted-msg');
+    let currentIdx = 1;
 
-    if (isAdmin) document.getElementById('admin-view').classList.remove('hidden');
+    if (isAdmin) document.getElementById('admin-ui').classList.remove('hidden');
 
-    for (let i = 1; i <= 10; i++) {
-        let btn = document.createElement('button');
-        btn.innerText = i;
-        btn.onclick = () => submitRating(i);
-        ratingArea.appendChild(btn);
-    }
-
-    db.ref('currentImage').on('value', (snapshot) => {
-        let idx = snapshot.val() || 1;
+    db.ref('currentImage').on('value', (snap) => {
+        currentIdx = snap.val() || 1;
         
-        // טעינת תמונה לפי הפורמט שלך
-        const imagePath = `images/jpg-${idx}.JPG`;
-        console.log("מנסה לטעון:", imagePath);
-        imgElement.src = imagePath;
-        
-        indexElement.innerText = `${idx} / ${totalImages}`;
-        document.getElementById('img-title').innerText = `תמונה ${idx}`;
-        
-        ratingContainer.classList.remove('hidden');
-        votedMsg.classList.add('hidden');
-        
-        if (isAdmin) updateStats(idx);
+        imgElement.classList.remove('show');
+        setTimeout(() => {
+            imgElement.src = `images/jpg-${currentIdx}.JPG`;
+            imgElement.onload = () => imgElement.classList.add('show');
+            document.getElementById('img-title').innerText = `תמונה ${currentIdx}`;
+            document.getElementById('img-index').innerText = `${currentIdx} / ${totalImages}`;
+            
+            document.getElementById('rating-container').classList.remove('hidden');
+            document.getElementById('voted-msg').classList.add('hidden');
+            
+            if (isAdmin) updateAdminStats(currentIdx);
+        }, 300);
     });
 
     function submitRating(val) {
-        db.ref('currentImage').once('value', (snap) => {
-            let idx = snap.val() || 1;
-            db.ref(`ratings/${idx}`).push(val);
-            ratingContainer.classList.add('hidden');
-            votedMsg.classList.remove('hidden');
-        });
+        db.ref(`ratings/${currentIdx}`).push(val);
+        document.getElementById('rating-container').classList.add('hidden');
+        document.getElementById('voted-msg').classList.remove('hidden');
     }
 
-    function nextImage() {
-        db.ref('currentImage').transaction(idx => (idx < totalImages ? (idx || 1) + 1 : idx));
-    }
+    function nextImage() { db.ref('currentImage').transaction(i => (i < totalImages ? (i || 1) + 1 : i)); }
+    function prevImage() { db.ref('currentImage').transaction(i => (i > 1 ? i - 1 : 1)); }
 
-    function prevImage() {
-        db.ref('currentImage').transaction(idx => (idx > 1 ? idx - 1 : 1));
-    }
-
-    function updateStats(idx) {
+    function updateAdminStats(idx) {
         db.ref(`ratings/${idx}`).on('value', (snap) => {
             let data = snap.val();
             if (data) {
                 let scores = Object.values(data);
-                let avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2);
-                document.getElementById('avg-score').innerText = avg + ` (${scores.length} מדרגים)`;
+                let total = scores.reduce((a, b) => a + b, 0);
+                document.getElementById('total-score').innerText = total;
+                document.getElementById('vote-count').innerText = scores.length;
             } else {
-                document.getElementById('avg-score').innerText = "אין דירוגים עדיין";
+                document.getElementById('total-score').innerText = "0";
+                document.getElementById('vote-count').innerText = "0";
             }
         });
     }
 
-    function showSummary() {
+    function calculateWinners() {
         db.ref('ratings').once('value', (snap) => {
-            let all = snap.val();
-            if (!all) return alert("אין נתונים.");
-            let winner = {id: 0, avg: 0};
-            for (let id in all) {
-                let scores = Object.values(all[id]);
-                let avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-                if (avg > winner.avg) winner = {id, avg};
+            const allRatings = snap.val();
+            if (!allRatings) return alert("אין מספיק נתונים.");
+
+            let results = [];
+            for (let id in allRatings) {
+                let scores = Object.values(allRatings[id]);
+                let sum = scores.reduce((a, b) => a + b, 0);
+                results.push({ id: id, score: sum });
             }
-            alert(`התמונה המנצחת היא jpg-${winner.id}.JPG עם ממוצע ${winner.avg.toFixed(2)}`);
+
+            // מיון לפי הניקוד הגבוה ביותר
+            results.sort((a, b) => b.score - a.score);
+            
+            // לקיחת 4 הראשונות
+            const winners = results.slice(0, 4);
+            displayWinners(winners);
         });
+    }
+
+    function displayWinners(winners) {
+        const list = document.getElementById('winner-list');
+        list.innerHTML = "";
+        
+        winners.forEach((w, index) => {
+            const rank = index + 1;
+            const div = document.createElement('div');
+            div.className = `winner-item ${rank === 1 ? 'rank-1' : ''}`;
+            
+            div.innerHTML = `
+                <span class="rank-badge badge-${rank}">מקום ${rank}</span>
+                <img src="images/jpg-${w.id}.JPG">
+                <div style="margin-top:5px"><b>תמונה ${w.id}</b></div>
+                <div style="color:var(--accent)">ניקוד מצטבר: ${w.score}</div>
+            `;
+            list.appendChild(div);
+        });
+
+        document.getElementById('main-view').style.display = 'none';
+        document.getElementById('summary-screen').style.display = 'block';
     }
 </script>
 </body>
