@@ -40,7 +40,7 @@
             justify-content: center;
             background: #000;
             position: relative;
-            padding: 5px;
+            padding: 10px;
             overflow: hidden;
         }
         
@@ -53,6 +53,38 @@
             border-radius: 4px;
         }
         #main-image.show { opacity: 1; }
+
+        /* מסך פתיחה שחור ומסוגר */
+        #welcome-box {
+            display: none;
+            width: 90%;
+            max-width: 450px;
+            padding: 30px 20px;
+            border: 3px solid var(--accent);
+            border-radius: 15px;
+            background: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            z-index: 30;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .welcome-title {
+            font-size: 1.6rem;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .welcome-body {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #fff;
+        }
 
         .prompt-header {
             position: absolute;
@@ -200,7 +232,18 @@
 
 <div id="main-view" style="height: 100%; display: flex; flex-direction: column;">
     <div class="img-display-area">
-        <div class="prompt-header">
+        <!-- מסך פתיחה -->
+        <div id="welcome-box">
+            <div class="welcome-title">ברוכים הבאים למשחק של יונצ'י!</div>
+            <div class="welcome-body">
+                פה תדרגו תמונות לפי כמה הן מצחיקות. <br><br>
+                <b>חשוב:</b> לא לתת 10 סתם בגלל שזה טיפה מצחיק, אלא לדרג כמו שצריך! <br><br>
+                יש פה תמונות שיצחיקו אפילו את צ'ילה... <br>
+                <b>תהנו! 🎭</b>
+            </div>
+        </div>
+
+        <div class="prompt-header" id="header-labels">
             <span id="prompt-text">דרגו את התמונה המצחיקה ביותר</span>
             <span class="welcome-sub">שלום לכל משפחת "חשB"</span>
         </div>
@@ -268,6 +311,8 @@
     const totalImages = 96;
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
+    const welcomeBox = document.getElementById('welcome-box');
+    const headerLabels = document.getElementById('header-labels');
     const nextSound = document.getElementById('next-sound');
     const bgMusic = document.getElementById('bg-music');
     let currentIdx = -1;
@@ -294,12 +339,18 @@
         imgElement.classList.remove('show');
         
         setTimeout(() => {
-            imgElement.src = currentIdx === 0 ? `images/welcome.JPG` : `images/jpg-${currentIdx}.JPG`;
-            imgElement.onload = () => imgElement.classList.add('show');
-            
-            if(currentIdx === 0) {
-                document.getElementById('img-title').innerText = `בדיקת מערכת`;
+            // טיפול במסך פתיחה (תמונה 0)
+            if (currentIdx === 0) {
+                welcomeBox.style.display = 'block';
+                imgElement.style.display = 'none';
+                headerLabels.style.display = 'none';
+                document.getElementById('img-title').innerText = `פתיחה`;
             } else {
+                welcomeBox.style.display = 'none';
+                imgElement.style.display = 'block';
+                headerLabels.style.display = 'block';
+                imgElement.src = `images/jpg-${currentIdx}.JPG`;
+                imgElement.onload = () => imgElement.classList.add('show');
                 document.getElementById('img-title').innerText = `תמונה ${currentIdx}`;
             }
             
