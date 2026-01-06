@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Photo Rating - Random Order Edition</title>
+    <title>Photo Rating - Admin Sound Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
@@ -58,18 +58,23 @@
         }
         #main-image.show { opacity: 1; }
 
-        /* מסך פתיחה */
+        /* מסך פתיחה - משופר וגדול יותר */
         #welcome-box {
             display: none;
-            width: 90%;
-            max-width: 500px;
-            padding: 40px 25px;
-            border: 4px double var(--accent);
-            border-radius: 20px;
-            background: #000;
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
+            width: 95%;
+            max-width: 800px;
+            padding: 60px 40px;
+            border: 6px double var(--accent);
+            border-radius: 30px;
+            background: rgba(18, 18, 18, 0.95);
+            box-shadow: 0 0 60px rgba(0, 255, 0, 0.5);
             z-index: 30;
-            animation: fadeIn 0.8s ease-out;
+            animation: welcomePulse 2s infinite alternate, fadeIn 1s ease-out;
+        }
+
+        @keyframes welcomePulse {
+            from { box-shadow: 0 0 40px rgba(0, 255, 0, 0.3); }
+            to { box-shadow: 0 0 70px rgba(0, 255, 0, 0.6); }
         }
 
         @keyframes fadeIn {
@@ -78,20 +83,21 @@
         }
 
         .welcome-title {
-            font-size: 2rem;
+            font-size: 3.5rem;
             color: var(--accent);
-            margin-bottom: 25px;
-            font-weight: bold;
-            text-shadow: 0 0 15px rgba(0,255,0,0.6);
+            margin-bottom: 30px;
+            font-weight: 800;
+            text-shadow: 0 0 20px rgba(0,255,0,0.7);
+            line-height: 1.1;
         }
 
         .welcome-body {
-            font-size: 1.4rem;
-            line-height: 1.6;
+            font-size: 1.8rem;
+            line-height: 1.5;
             color: #fff;
         }
 
-        .highlight { color: var(--accent); font-weight: bold; }
+        .highlight { color: var(--accent); font-weight: bold; text-decoration: underline; }
 
         /* כותרות עליונות */
         .prompt-header {
@@ -291,7 +297,9 @@
 </head>
 <body onclick="handleInteraction()">
 
+<!-- מקורות סאונד -->
 <audio id="next-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="vote-received-sound" src="https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3.mp3"></audio>
 <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
 
 <div id="hamburger" class="hamburger" onclick="toggleMenu()">
@@ -316,11 +324,12 @@
 <div id="main-view" style="height: 100%; display: flex; flex-direction: column;">
     <div class="img-display-area">
         <div id="welcome-box">
-            <div class="welcome-title">ברוך הבא למשחק של יונצ'י!</div>
+            <div class="welcome-title">המשחק של יונצ'י!</div>
             <div class="welcome-body">
+                ברוכים הבאים למשפחת <span class="highlight">חשB</span> <br><br>
                 פה תדרגו תמונות לפי כמה הן מצחיקות. <br><br>
                 התמונות מופיעות ב<span class="highlight">סדר אקראי</span>! <br><br>
-                תהנו! 🎭
+                מחכים לראות מי יהיה המנצח... 🎭
             </div>
         </div>
         <div class="prompt-header" id="header-labels">
@@ -366,6 +375,9 @@
 </div>
 
 <script>
+    // קישור סאונד מותאם אישית מה-GitHub שלך
+    const CUSTOM_VOTE_SOUND_URL = "https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3.mp3";
+
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
         authDomain: "my-rating-game.firebaseapp.com",
@@ -385,11 +397,17 @@
     const welcomeBox = document.getElementById('welcome-box');
     const headerLabels = document.getElementById('header-labels');
     const nextSound = document.getElementById('next-sound');
+    const voteSound = document.getElementById('vote-received-sound');
     const bgMusic = document.getElementById('bg-music');
     
-    let currentStep = -1; // המיקום ברשימה המעורבבת
-    let randomOrder = []; // רשימת אינדקסים מעורבבת
+    // עדכון מקור הסאונד
+    voteSound.src = CUSTOM_VOTE_SOUND_URL;
+    
+    let currentStep = -1;
+    let randomOrder = [];
     let musicStarted = false;
+    let votedImageIds = new Set();
+    let firstLoadDone = false;
 
     if (isAdmin) {
         document.getElementById('hamburger').style.display = 'block';
@@ -398,6 +416,21 @@
         document.getElementById('user-ui').classList.add('hidden');
         document.getElementById('admin-notice').classList.remove('hidden');
         document.getElementById('controls-bar').classList.add('admin-mode');
+        
+        // השמעת סאונד כשיש שינוי בנתוני הדירוג
+        db.ref('ratings').on('child_changed', (snapshot) => {
+            if (firstLoadDone) playVoteSound();
+        });
+        db.ref('ratings').on('child_added', (snapshot) => {
+            if (firstLoadDone) playVoteSound();
+        });
+        
+        setTimeout(() => { firstLoadDone = true; }, 1500);
+    }
+
+    function playVoteSound() {
+        voteSound.currentTime = 0;
+        voteSound.play().catch(e => console.log("Sound error:", e));
     }
 
     function toggleMenu() {
@@ -412,9 +445,10 @@
             bgMusic.play().catch(() => {});
             musicStarted = true;
         }
+        // פתיחת ערוץ הסאונד בדפדפן
+        voteSound.play().then(() => { voteSound.pause(); voteSound.currentTime = 0; }).catch(() => {});
     }
 
-    // פונקציית ערבוב (Fisher-Yates)
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -423,38 +457,27 @@
         return array;
     }
 
-    // מאזין לסדר התמונות ולשלב הנוכחי
     db.ref('gameState').on('value', (snap) => {
         const state = snap.val();
-        
-        // אם אין סדר מוגדר (פעם ראשונה), האדמין יוצר אחד
         if (!state || !state.order) {
             if (isAdmin) {
                 const newOrder = shuffleArray(Array.from({length: totalImages}, (_, i) => i + 1));
-                db.ref('gameState').set({
-                    order: newOrder,
-                    currentStep: 0
-                });
+                db.ref('gameState').set({ order: newOrder, currentStep: 0 });
             }
             return;
         }
-
         randomOrder = state.order;
         const newStep = state.currentStep;
-
         if (isAdmin && currentStep !== -1 && newStep !== currentStep) {
             nextSound.play().catch(() => {});
         }
-
         currentStep = newStep;
         const actualImgId = currentStep === 0 ? 0 : randomOrder[currentStep - 1];
-
         updateUI(actualImgId);
     });
 
     function updateUI(imgId) {
         imgElement.classList.remove('show');
-        
         setTimeout(() => {
             if (imgId === 0) {
                 welcomeBox.style.display = 'block';
@@ -469,14 +492,16 @@
                 imgElement.src = `images/jpg-${imgId}.JPG`;
                 imgElement.onload = () => imgElement.classList.add('show');
             }
-
             document.getElementById('menu-img-index').innerText = `${currentStep} / ${totalImages}`;
-            
             if (!isAdmin) {
-                document.getElementById('rating-container').classList.remove('hidden');
-                document.getElementById('voted-msg').classList.add('hidden');
+                if (votedImageIds.has(imgId)) {
+                    document.getElementById('rating-container').classList.add('hidden');
+                    document.getElementById('voted-msg').classList.remove('hidden');
+                } else {
+                    document.getElementById('rating-container').classList.remove('hidden');
+                    document.getElementById('voted-msg').classList.add('hidden');
+                }
             }
-            
             listenToLiveVoters(imgId);
             if (isAdmin) updateAdminStats(imgId);
         }, 200);
@@ -492,6 +517,7 @@
     function submitRating(val) {
         if (isAdmin || currentStep === 0) return;
         const actualImgId = randomOrder[currentStep - 1];
+        votedImageIds.add(actualImgId);
         db.ref(`ratings/${actualImgId}`).push(val);
         document.getElementById('rating-container').classList.add('hidden');
         document.getElementById('voted-msg').classList.remove('hidden');
@@ -512,10 +538,8 @@
         if(confirm("🗑️ זה ימחק את כל הדירוגים ויגריל סדר תמונות חדש. להמשיך?")) {
             const newOrder = shuffleArray(Array.from({length: totalImages}, (_, i) => i + 1));
             db.ref('ratings').remove();
-            db.ref('gameState').set({
-                order: newOrder,
-                currentStep: 0
-            });
+            db.ref('gameState').set({ order: newOrder, currentStep: 0 });
+            votedImageIds.clear();
             toggleMenu();
         }
     }
@@ -543,14 +567,12 @@
             const winners = results.slice(0, 4);
             const list = document.getElementById('winner-list');
             list.innerHTML = "";
-            
             const rankStyles = [
                 { class: 'rank-1', icon: '👑', color: 'var(--gold)', text: 'המצחיקה ביותר!' },
                 { class: 'rank-2', icon: '🥈', color: 'var(--silver)', text: 'במקום השני' },
                 { class: 'rank-3', icon: '🥉', color: 'var(--bronze)', text: 'במקום השלישי' },
                 { class: 'rank-4', icon: '🏅', color: '#444', text: 'מקום רביעי' }
             ];
-
             winners.forEach((w, i) => {
                 const style = rankStyles[i];
                 const card = document.createElement('div');
@@ -569,7 +591,6 @@
                 `;
                 list.appendChild(card);
             });
-
             document.getElementById('main-view').style.display = 'none';
             document.getElementById('summary-screen').style.display = 'block';
             toggleMenu();
