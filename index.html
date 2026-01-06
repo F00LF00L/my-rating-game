@@ -29,7 +29,7 @@
             height: 100svh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* מונע גלילה לחלוטין */
+            overflow: hidden;
         }
 
         /* אזור התצוגה המרכזי */
@@ -51,7 +51,7 @@
             transition: opacity 0.3s ease-in-out;
             opacity: 0;
             border-radius: 4px;
-            display: none; /* מתחיל מוסתר */
+            display: none;
         }
         #main-image.show { opacity: 1; }
 
@@ -61,7 +61,7 @@
             width: 90%;
             max-width: 500px;
             padding: 40px 25px;
-            border: 4px double var(--accent); /* מסגרת כפולה למראה מסוגר */
+            border: 4px double var(--accent);
             border-radius: 20px;
             background: #000;
             box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
@@ -86,18 +86,14 @@
             font-size: 1.4rem;
             line-height: 1.6;
             color: #fff;
-            font-weight: 400;
         }
 
-        .highlight {
-            color: var(--accent);
-            font-weight: bold;
-        }
+        .highlight { color: var(--accent); font-weight: bold; }
 
         /* כותרות עליונות */
         .prompt-header {
             position: absolute;
-            top: 10px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.85);
@@ -110,61 +106,112 @@
             border: 1px solid var(--accent);
             white-space: nowrap;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            text-align: center;
-            display: none; /* מוסתר במסך פתיחה */
+            display: none;
         }
 
-        .welcome-sub {
-            display: block;
-            font-size: 0.9rem;
-            color: #fff;
-            margin-top: 3px;
-            letter-spacing: 1px;
-        }
+        .welcome-sub { display: block; font-size: 0.9rem; color: #fff; margin-top: 3px; }
 
-        .floating-title {
+        /* כפתורי ניווט צדיים לאדמין */
+        .side-nav {
             position: absolute;
-            bottom: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 100px;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 100;
+            display: none; /* יוצג רק לאדמין */
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 10px 10px 0;
+            backdrop-filter: blur(5px);
+        }
+        .side-nav:active { background: rgba(255,255,255,0.3); }
+        .nav-right { right: 0; border-radius: 10px 0 0 10px; }
+        .nav-left { left: 0; border-radius: 0 10px 10px 0; }
+
+        /* תפריט המבורגר */
+        .hamburger {
+            position: absolute;
+            top: 15px;
             right: 15px;
-            background: rgba(0,0,0,0.7);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            z-index: 10;
-            color: #aaa;
+            z-index: 200;
+            cursor: pointer;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            border-radius: 10px;
+            display: none; /* יוצג רק לאדמין */
+            border: 1px solid #444;
+        }
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 5px 0;
+            border-radius: 2px;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: var(--card-bg);
+            z-index: 250;
+            transition: 0.3s;
+            padding: 20px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: right;
+        }
+        .side-menu.open { right: 0; }
+        .menu-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 240;
         }
 
         /* אזור כפתורים תחתון */
         .controls-area {
             background: var(--card-bg);
-            padding: 10px;
+            padding: 15px 10px;
             border-top: 2px solid #222;
             flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        }
+
+        /* הסתרה מוחלטת של אזור הדירוג כשהוא לא רלוונטי */
+        .controls-area.admin-mode {
+            padding: 5px;
+            min-height: 40px;
         }
 
         .rating-btns { 
             display: grid; 
             grid-template-columns: repeat(5, 1fr); 
-            gap: 6px; 
+            gap: 8px; 
             max-width: 500px;
             margin: 0 auto;
             width: 100%;
         }
 
-        button { 
-            height: 48px; 
+        button.rate-btn { 
+            height: 50px; 
             border: none; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             cursor: pointer; 
             color: #000; 
             font-weight: bold; 
-            font-size: 1.1rem; 
-            transition: all 0.1s;
+            font-size: 1.2rem; 
         }
-        button:active { transform: scale(0.92); opacity: 0.8; }
 
         .btn-1 { background: #ff4d4d; } .btn-2 { background: #ff751a; }
         .btn-3 { background: #ff944d; } .btn-4 { background: #ffad33; }
@@ -172,28 +219,21 @@
         .btn-7 { background: #bcff33; } .btn-8 { background: #92ff33; }
         .btn-9 { background: #69ff33; } .btn-10 { background: #33ff33; }
 
-        .voted-msg { color: #4db8ff; font-size: 1.2rem; padding: 12px; font-weight: bold; }
+        .voted-msg { color: #4db8ff; font-size: 1.2rem; font-weight: bold; }
 
-        /* אדמין */
-        .admin-controls { 
-            margin-top: 5px; 
-            padding: 10px; 
-            border-top: 1px dashed #444;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+        /* עיצוב כללי לכפתורי אדמין בתפריט */
+        .menu-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
         }
-        
-        .admin-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .btn-admin { background: #444; color: white; flex: 1; height: 40px; font-size: 0.9rem; }
-        .btn-reset { background: var(--danger); color: white; width: 100%; height: 40px; font-size: 1rem; margin-top: 5px; }
-        .btn-win { background: var(--accent); color: black; width: 100%; height: 45px; margin-top: 5px; }
+        .btn-reset { background: var(--danger); color: white; }
+        .btn-win { background: var(--accent); color: black; }
+        .btn-close-menu { background: #444; color: white; margin-top: auto; }
 
         #summary-screen {
             position: fixed;
@@ -208,14 +248,39 @@
         .hidden { display: none !important; }
     </style>
 </head>
-<body onclick="startBackgroundMusic()">
+<body onclick="handleInteraction()">
 
 <audio id="next-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
 
+<!-- תפריט המבורגר לאדמין -->
+<div id="hamburger" class="hamburger" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+
+<div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
+<div id="side-menu" class="side-menu">
+    <h2 style="color:var(--accent); border-bottom: 1px solid #444; padding-bottom: 10px;">ניהול משחק</h2>
+    
+    <div style="margin: 10px 0;">
+        <div>תמונה נוכחית: <b id="menu-img-index">0 / 96</b></div>
+        <div>סך ניקוד: <b id="menu-total-score" style="color:var(--accent)">0</b></div>
+    </div>
+
+    <button onclick="calculateWinners()" class="menu-btn btn-win">🏆 הצג תוצאות סופיות</button>
+    <button onclick="resetGame()" class="menu-btn btn-reset">🗑️ איפוס דאטה-בייס</button>
+    
+    <button onclick="toggleMenu()" class="menu-btn btn-close-menu">סגור תפריט</button>
+</div>
+
+<!-- כפתורי ניווט צדיים לאדמין -->
+<button id="nav-prev" class="side-nav nav-left" onclick="prevImage()">❯</button>
+<button id="nav-next" class="side-nav nav-right" onclick="nextImage()">❮</button>
+
 <div id="main-view" style="height: 100%; display: flex; flex-direction: column;">
     <div class="img-display-area">
-        <!-- מסך פתיחה שחור ומסוגר -->
         <div id="welcome-box">
             <div class="welcome-title">ברוך הבא למשחק של יונצ'י!</div>
             <div class="welcome-body">
@@ -231,47 +296,34 @@
             <span class="welcome-sub">שלום לכל משפחת "חשB"</span>
         </div>
         
-        <div class="floating-title" id="img-title">טוען...</div>
         <img id="main-image" src="" alt="תמונה">
     </div>
 
-    <div class="controls-area">
-        <!-- ממשק משתמש -->
+    <div id="controls-bar" class="controls-area">
         <div id="user-ui">
             <div id="rating-container">
                 <div class="rating-btns">
-                    <button class="btn-1" onclick="submitRating(1)">1</button>
-                    <button class="btn-2" onclick="submitRating(2)">2</button>
-                    <button class="btn-3" onclick="submitRating(3)">3</button>
-                    <button class="btn-4" onclick="submitRating(4)">4</button>
-                    <button class="btn-5" onclick="submitRating(5)">5</button>
-                    <button class="btn-6" onclick="submitRating(6)">6</button>
-                    <button class="btn-7" onclick="submitRating(7)">7</button>
-                    <button class="btn-8" onclick="submitRating(8)">8</button>
-                    <button class="btn-9" onclick="submitRating(9)">9</button>
-                    <button class="btn-10" onclick="submitRating(10)">10</button>
+                    <button class="rate-btn btn-1" onclick="submitRating(1)">1</button>
+                    <button class="rate-btn btn-2" onclick="submitRating(2)">2</button>
+                    <button class="rate-btn btn-3" onclick="submitRating(3)">3</button>
+                    <button class="rate-btn btn-4" onclick="submitRating(4)">4</button>
+                    <button class="rate-btn btn-5" onclick="submitRating(5)">5</button>
+                    <button class="rate-btn btn-6" onclick="submitRating(6)">6</button>
+                    <button class="rate-btn btn-7" onclick="submitRating(7)">7</button>
+                    <button class="rate-btn btn-8" onclick="submitRating(8)">8</button>
+                    <button class="rate-btn btn-9" onclick="submitRating(9)">9</button>
+                    <button class="rate-btn btn-10" onclick="submitRating(10)">10</button>
                 </div>
-                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                <div style="font-size: 0.8rem; color: #888; margin-top: 8px;">
                     מדרגים איתך: <span id="live-voters" style="color:var(--accent); font-weight:bold;">0</span>
                 </div>
             </div>
-            <div id="voted-msg" class="voted-msg hidden">הדירוג נשלח בהצלחה! ✅</div>
+            <div id="voted-msg" class="voted-msg hidden">נשלח! ✅</div>
         </div>
-
-        <!-- ממשק אדמין -->
-        <div id="admin-ui" class="admin-controls hidden">
-            <div class="admin-row">
-                <button class="btn-admin" onclick="prevImage()">⬅️ הקודמת</button>
-                <span id="img-index" style="font-weight:bold; min-width: 70px; font-size: 1.1rem;">0 / 96</span>
-                <button class="btn-admin" onclick="nextImage()">הבאה ➡️</button>
-            </div>
-            
-            <div class="admin-row">
-                <span style="font-size: 0.9rem;">ניקוד נוכחי: <b id="total-score" style="color:var(--accent)">0</b></span>
-                <button onclick="resetGame()" class="btn-reset">🗑️ איפוס דאטה-בייס</button>
-            </div>
-            
-            <button onclick="calculateWinners()" class="btn-win">🏆 הצג תוצאות סופיות</button>
+        
+        <!-- הודעת אדמין במקום כפתורי דירוג -->
+        <div id="admin-notice" class="hidden" style="color:#888; font-size: 0.9rem; padding: 10px;">
+            מצב אדמין פעיל - הדירוג חסום עבורך
         </div>
     </div>
 </div>
@@ -283,7 +335,6 @@
 </div>
 
 <script>
-    // הגדרות Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
         authDomain: "my-rating-game.firebaseapp.com",
@@ -308,51 +359,72 @@
     let currentIdx = -1;
     let musicStarted = false;
 
-    if (isAdmin) document.getElementById('admin-ui').classList.remove('hidden');
+    // הגדרות תצוגה לאדמין
+    if (isAdmin) {
+        document.getElementById('hamburger').style.display = 'block';
+        document.getElementById('nav-prev').style.display = 'flex';
+        document.getElementById('nav-next').style.display = 'flex';
+        
+        // הסתרת ממשק הדירוג לאדמין
+        document.getElementById('user-ui').classList.add('hidden');
+        document.getElementById('admin-notice').classList.remove('hidden');
+        document.getElementById('controls-bar').classList.add('admin-mode');
+    }
+
+    function toggleMenu() {
+        document.getElementById('side-menu').classList.toggle('open');
+        document.getElementById('menu-overlay').style.display = 
+            document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none';
+    }
+
+    function handleInteraction() {
+        if (isAdmin) {
+            startBackgroundMusic();
+        }
+    }
 
     function startBackgroundMusic() {
-        if (!musicStarted) {
+        if (!musicStarted && isAdmin) {
             bgMusic.volume = 0.15;
             bgMusic.play().catch(() => {});
             musicStarted = true;
         }
     }
 
-    // האזנה לשינוי תמונה מהאדמין
     db.ref('currentImage').on('value', (snap) => {
         const newIdx = snap.val() !== null ? snap.val() : 0;
         
-        if (currentIdx !== -1 && newIdx !== currentIdx) {
+        if (isAdmin && currentIdx !== -1 && newIdx !== currentIdx) {
             nextSound.play().catch(() => {});
         }
         
         currentIdx = newIdx;
+        
         imgElement.classList.remove('show');
         
         setTimeout(() => {
             if (currentIdx === 0) {
-                // הצגת מסך הפתיחה השחור
                 welcomeBox.style.display = 'block';
                 imgElement.style.display = 'none';
                 headerLabels.style.display = 'none';
-                document.getElementById('img-title').innerText = `מסך פתיחה`;
-                // הסתרת ממשק הדירוג במסך פתיחה
-                document.getElementById('user-ui').style.visibility = 'hidden';
+                // הסתרת כל אזור הבקרות במסך פתיחה
+                document.getElementById('controls-bar').style.visibility = 'hidden';
             } else {
-                // הצגת תמונות המשחק
                 welcomeBox.style.display = 'none';
                 imgElement.style.display = 'block';
                 headerLabels.style.display = 'block';
-                document.getElementById('user-ui').style.visibility = 'visible';
-                
+                document.getElementById('controls-bar').style.visibility = 'visible';
                 imgElement.src = `images/jpg-${currentIdx}.JPG`;
                 imgElement.onload = () => imgElement.classList.add('show');
-                document.getElementById('img-title').innerText = `תמונה ${currentIdx}`;
             }
             
-            document.getElementById('img-index').innerText = `${currentIdx} / ${totalImages}`;
-            document.getElementById('rating-container').classList.remove('hidden');
-            document.getElementById('voted-msg').classList.add('hidden');
+            document.getElementById('menu-img-index').innerText = `${currentIdx} / ${totalImages}`;
+            
+            // רק אם לא אדמין - נחזיר את אפשרות הדירוג
+            if (!isAdmin) {
+                document.getElementById('rating-container').classList.remove('hidden');
+                document.getElementById('voted-msg').classList.add('hidden');
+            }
             
             listenToLiveVoters(currentIdx);
             if (isAdmin) updateAdminStats(currentIdx);
@@ -367,17 +439,16 @@
     }
 
     function submitRating(val) {
-        startBackgroundMusic();
+        if (isAdmin) return; // הגנה נוספת ברמת הלוגיקה
         db.ref(`ratings/${currentIdx}`).push(val);
         document.getElementById('rating-container').classList.add('hidden');
         document.getElementById('voted-msg').classList.remove('hidden');
     }
 
-    // פונקציות אדמין
     function nextImage() { 
         db.ref('currentImage').transaction(i => {
             const next = (i || 0) + 1;
-            return next > totalImages ? i : next; // הגבלה ל-96
+            return next > totalImages ? i : next;
         }); 
     }
     
@@ -386,10 +457,10 @@
     }
 
     function resetGame() {
-        if(confirm("⚠️ פעולה זו תמחק את כל הדירוגים ותחזיר את כולם למסך הפתיחה. בטוח?")) {
+        if(confirm("🗑️ למחוק הכל ולהתחיל מחדש?")) {
             db.ref('ratings').remove();
             db.ref('currentImage').set(0);
-            alert("הדאטה-בייס אופס בהצלחה.");
+            toggleMenu();
         }
     }
 
@@ -398,26 +469,22 @@
             let data = snap.val();
             let sum = 0;
             if (data) sum = Object.values(data).reduce((a, b) => a + b, 0);
-            document.getElementById('total-score').innerText = sum;
+            document.getElementById('menu-total-score').innerText = sum;
         });
     }
 
     function calculateWinners() {
         db.ref('ratings').once('value', (snap) => {
             const allRatings = snap.val();
-            if (!allRatings) return alert("אין נתונים לדירוג עדיין.");
-
+            if (!allRatings) return alert("אין נתונים.");
             let results = [];
             for (let id in allRatings) {
                 if (parseInt(id) === 0) continue;
                 let scores = Object.values(allRatings[id]);
-                let sum = scores.reduce((a, b) => a + b, 0);
-                results.push({ id: id, score: sum });
+                results.push({ id: id, score: scores.reduce((a, b) => a + b, 0) });
             }
-
             results.sort((a, b) => b.score - a.score);
             const winners = results.slice(0, 4);
-            
             const list = document.getElementById('winner-list');
             list.innerHTML = "";
             winners.forEach((w, i) => {
@@ -429,14 +496,13 @@
                 div.innerHTML = `
                     <div style="color:gold; font-weight:bold;">מקום ${i+1}</div>
                     <img src="images/jpg-${w.id}.JPG" style="width:100%; border-radius:5px; margin:5px 0;">
-                    <div>תמונה ${w.id}</div>
                     <div style="color:var(--accent)">ניקוד: ${w.score}</div>
                 `;
                 list.appendChild(div);
             });
-
             document.getElementById('main-view').style.display = 'none';
             document.getElementById('summary-screen').style.display = 'block';
+            toggleMenu();
         });
     }
 </script>
