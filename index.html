@@ -48,7 +48,7 @@
 </div>
 
 <script>
-    // הגדרות ה-Firebase שלך (כבר מוטמעות):
+    // הגדרות ה-Firebase המעודכנות שלך (כולל ה-URL הנכון של אירופה):
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
         authDomain: "my-rating-game.firebaseapp.com",
@@ -56,13 +56,13 @@
         storageBucket: "my-rating-game.firebasestorage.app",
         messagingSenderId: "911209380858",
         appId: "1:911209380858:web:ff65851ba5c95b82844243",
-        databaseURL: "https://my-rating-game-default-rtdb.firebaseio.com"
+        databaseURL: "https://my-rating-game-default-rtdb.europe-west1.firebasedatabase.app"
     };
     
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const totalImages = 100; // וודא שיש לך באמת 100 תמונות
+    const totalImages = 100;
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
     const indexElement = document.getElementById('img-index');
@@ -79,12 +79,13 @@
         ratingArea.appendChild(btn);
     }
 
-    // סנכרון תמונה ונתונים
     db.ref('currentImage').on('value', (snapshot) => {
         let idx = snapshot.val() || 1;
         
-        // --- התיקון כאן: שינוי הסיומת ל-JPG באותיות גדולות ---
-        imgElement.src = `images/jpg-${idx}.JPG`; 
+        // טעינת תמונה לפי הפורמט שלך
+        const imagePath = `images/jpg-${idx}.JPG`;
+        console.log("מנסה לטעון:", imagePath);
+        imgElement.src = imagePath;
         
         indexElement.innerText = `${idx} / ${totalImages}`;
         document.getElementById('img-title').innerText = `תמונה ${idx}`;
@@ -135,7 +136,6 @@
                 let avg = scores.reduce((a, b) => a + b, 0) / scores.length;
                 if (avg > winner.avg) winner = {id, avg};
             }
-            // עדכון גם בהודעת הניצחון שזה JPG
             alert(`התמונה המנצחת היא jpg-${winner.id}.JPG עם ממוצע ${winner.avg.toFixed(2)}`);
         });
     }
