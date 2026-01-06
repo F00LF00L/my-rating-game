@@ -51,6 +51,7 @@
             transition: opacity 0.3s ease-in-out;
             opacity: 0;
             border-radius: 4px;
+            display: none; /* מתחיל מוסתר */
         }
         #main-image.show { opacity: 1; }
 
@@ -59,11 +60,11 @@
             display: none;
             width: 90%;
             max-width: 500px;
-            padding: 30px 20px;
+            padding: 40px 25px;
             border: 4px double var(--accent); /* מסגרת כפולה למראה מסוגר */
-            border-radius: 15px;
+            border-radius: 20px;
             background: #000;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
             z-index: 30;
             animation: fadeIn 0.8s ease-out;
         }
@@ -74,16 +75,16 @@
         }
 
         .welcome-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--accent);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(0,255,0,0.5);
+            text-shadow: 0 0 15px rgba(0,255,0,0.6);
         }
 
         .welcome-body {
-            font-size: 1.3rem;
-            line-height: 1.5;
+            font-size: 1.4rem;
+            line-height: 1.6;
             color: #fff;
             font-weight: 400;
         }
@@ -110,6 +111,7 @@
             white-space: nowrap;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             text-align: center;
+            display: none; /* מוסתר במסך פתיחה */
         }
 
         .welcome-sub {
@@ -334,7 +336,7 @@
                 imgElement.style.display = 'none';
                 headerLabels.style.display = 'none';
                 document.getElementById('img-title').innerText = `מסך פתיחה`;
-                // הסתרת כפתורי דירוג במסך פתיחה
+                // הסתרת ממשק הדירוג במסך פתיחה
                 document.getElementById('user-ui').style.visibility = 'hidden';
             } else {
                 // הצגת תמונות המשחק
