@@ -35,7 +35,7 @@
             overflow: hidden;
         }
 
-        /* אזור התצוגה המרכזי */
+        /* אזור התצוגה המרכזי - עכשיו גדל למקסימום */
         .img-display-area {
             flex: 1;
             display: flex;
@@ -45,6 +45,7 @@
             position: relative;
             padding: 10px;
             overflow: hidden;
+            width: 100%;
         }
         
         #main-image { 
@@ -58,23 +59,23 @@
         }
         #main-image.show { opacity: 1; }
 
-        /* מסך פתיחה */
+        /* מסך פתיחה מותאם למסך מלא */
         #welcome-box {
             display: none;
             width: 95%;
             max-width: 800px;
-            padding: 60px 40px;
-            border: 6px double var(--accent);
+            padding: 40px 20px;
+            border: 4px double var(--accent);
             border-radius: 30px;
             background: rgba(18, 18, 18, 0.95);
-            box-shadow: 0 0 60px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
             z-index: 30;
             animation: welcomePulse 2s infinite alternate, fadeIn 1s ease-out;
         }
 
         @keyframes welcomePulse {
-            from { box-shadow: 0 0 40px rgba(0, 255, 0, 0.3); }
-            to { box-shadow: 0 0 70px rgba(0, 255, 0, 0.6); }
+            from { box-shadow: 0 0 30px rgba(0, 255, 0, 0.3); }
+            to { box-shadow: 0 0 50px rgba(0, 255, 0, 0.5); }
         }
 
         @keyframes fadeIn {
@@ -83,17 +84,17 @@
         }
 
         .welcome-title {
-            font-size: 3.5rem;
+            font-size: 2.8rem;
             color: var(--accent);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-weight: 800;
-            text-shadow: 0 0 20px rgba(0,255,0,0.7);
+            text-shadow: 0 0 15px rgba(0,255,0,0.6);
             line-height: 1.1;
         }
 
         .welcome-body {
-            font-size: 1.8rem;
-            line-height: 1.5;
+            font-size: 1.4rem;
+            line-height: 1.4;
             color: #fff;
         }
 
@@ -108,7 +109,7 @@
             background: rgba(0, 0, 0, 0.85);
             padding: 8px 20px;
             border-radius: 25px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--accent);
             z-index: 20;
@@ -118,7 +119,7 @@
             display: none;
         }
 
-        .welcome-sub { display: block; font-size: 0.9rem; color: #fff; margin-top: 3px; }
+        .welcome-sub { display: block; font-size: 0.8rem; color: #fff; margin-top: 3px; }
 
         /* כפתורי ניווט צדיים לאדמין */
         .side-nav {
@@ -128,18 +129,16 @@
             background: rgba(255,255,255,0.1);
             color: white;
             border: none;
-            width: 60px;
-            height: 100px;
-            font-size: 2rem;
+            width: 50px;
+            height: 80px;
+            font-size: 1.5rem;
             cursor: pointer;
             z-index: 100;
             display: none;
             align-items: center;
             justify-content: center;
-            border-radius: 0 10px 10px 0;
             backdrop-filter: blur(5px);
         }
-        .side-nav:active { background: rgba(255,255,255,0.3); }
         .nav-right { right: 0; border-radius: 10px 0 0 10px; }
         .nav-left { left: 0; border-radius: 0 10px 10px 0; }
 
@@ -156,49 +155,36 @@
             display: none;
             border: 1px solid #444;
         }
-        .hamburger div {
-            width: 25px;
-            height: 3px;
-            background-color: white;
-            margin: 5px 0;
-            border-radius: 2px;
-        }
+        .hamburger div { width: 22px; height: 2px; background-color: white; margin: 4px 0; }
 
         .side-menu {
             position: fixed;
-            top: 0;
-            right: -300px;
-            width: 280px;
-            height: 100%;
-            background: var(--card-bg);
-            z-index: 250;
-            transition: 0.3s;
-            padding: 20px;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: right;
+            top: 0; right: -300px; width: 280px; height: 100%;
+            background: var(--card-bg); z-index: 250; transition: 0.3s;
+            padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 15px; text-align: right;
         }
         .side-menu.open { right: 0; }
         .menu-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 240;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 240;
         }
 
-        /* אזור כפתורים תחתון */
+        /* אזור כפתורים תחתון - הסוד לתיקון "החור השחור" */
         .controls-area {
             background: var(--card-bg);
             padding: 15px 10px;
             border-top: 2px solid #222;
             flex-shrink: 0;
+            transition: all 0.3s ease;
+            max-height: 200px;
+            overflow: hidden;
         }
-        .controls-area.admin-mode {
-            padding: 5px;
-            min-height: 40px;
+        /* כשהאזור מוסתר הוא לא יתפוס מקום בכלל */
+        .controls-area.collapsed {
+            padding: 0;
+            max-height: 0;
+            border: none;
         }
 
         .rating-btns { 
@@ -211,13 +197,13 @@
         }
 
         button.rate-btn { 
-            height: 50px; 
+            height: 45px; 
             border: none; 
             border-radius: 10px; 
             cursor: pointer; 
             color: #000; 
             font-weight: bold; 
-            font-size: 1.2rem; 
+            font-size: 1.1rem; 
         }
 
         .btn-1 { background: #ff4d4d; } .btn-2 { background: #ff751a; }
@@ -226,21 +212,7 @@
         .btn-7 { background: #bcff33; } .btn-8 { background: #92ff33; }
         .btn-9 { background: #69ff33; } .btn-10 { background: #33ff33; }
 
-        .voted-msg { color: #4db8ff; font-size: 1.2rem; font-weight: bold; }
-
-        /* כפתורי אדמין */
-        .menu-btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-        .btn-reset { background: var(--danger); color: white; }
-        .btn-win { background: var(--accent); color: black; }
-        .btn-close-menu { background: #444; color: white; margin-top: auto; }
+        .voted-msg { color: #4db8ff; font-size: 1.2rem; font-weight: bold; padding: 10px 0; }
 
         /* מסך סיכום תוצאות */
         #summary-screen {
@@ -254,14 +226,9 @@
         }
 
         .winner-card {
-            background: #111;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid #333;
-            animation: slideUp 0.6s ease-out both;
+            background: #111; border-radius: 20px; overflow: hidden; margin-bottom: 25px;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid #333; animation: slideUp 0.6s ease-out both;
         }
 
         @keyframes slideUp {
@@ -272,32 +239,26 @@
         .winner-card.rank-1 { 
             border: 3px solid var(--gold); 
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-            transform: scale(1.05);
-            margin-bottom: 40px;
+            transform: scale(1.02);
+            margin-bottom: 30px;
         }
 
         .badge {
-            position: absolute; top: 15px; right: 15px; width: 50px; height: 50px;
+            position: absolute; top: 15px; right: 15px; width: 40px; height: 40px;
             background: #000; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.5rem; font-weight: bold; z-index: 2;
+            justify-content: center; font-size: 1.2rem; font-weight: bold; z-index: 2;
             border: 2px solid currentColor;
         }
 
         .winner-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
-
-        .winner-info {
-            padding: 15px; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .winner-score { font-size: 1.4rem; font-weight: bold; color: var(--accent); }
+        .winner-info { padding: 12px; background: rgba(0,0,0,0.7); display: flex; justify-content: space-between; align-items: center; }
+        .winner-score { font-size: 1.2rem; font-weight: bold; color: var(--accent); }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body onclick="handleInteraction()">
 
-<!-- מקורות סאונד -->
 <audio id="next-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 <audio id="vote-received-sound" src="https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3"></audio>
 <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
@@ -309,13 +270,13 @@
 <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
 <div id="side-menu" class="side-menu">
     <h2 style="color:var(--accent); border-bottom: 1px solid #444; padding-bottom: 10px;">ניהול משחק</h2>
-    <div style="margin: 10px 0;">
+    <div style="margin: 10px 0; font-size: 0.9rem;">
         <div>התקדמות: <b id="menu-img-index">0 / 197</b></div>
         <div>סך ניקוד לתמונה: <b id="menu-total-score" style="color:var(--accent)">0</b></div>
     </div>
-    <button onclick="calculateWinners()" class="menu-btn btn-win">🏆 הצג תוצאות סופיות</button>
-    <button onclick="resetGame()" class="menu-btn btn-reset">🗑️ איפוס והגרלה מחדש</button>
-    <button onclick="toggleMenu()" class="menu-btn btn-close-menu">סגור תפריט</button>
+    <button onclick="calculateWinners()" style="background:var(--accent); color:black;" class="menu-btn">🏆 תוצאות סופיות</button>
+    <button onclick="resetGame()" style="background:var(--danger); color:white;" class="menu-btn">🗑️ איפוס הכל</button>
+    <button onclick="toggleMenu()" style="background:#444; color:white; margin-top:auto;" class="menu-btn">סגור</button>
 </div>
 
 <button id="nav-prev" class="side-nav nav-left" onclick="prevImage()">❯</button>
@@ -331,6 +292,9 @@
                 התמונות מופיעות ב<span class="highlight">סדר אקראי</span>! <br><br>
                 מחכים לראות מי יהיה המנצח... 🎭
             </div>
+            <div style="margin-top: 25px; font-size: 1.1rem; color: #aaa;">
+                משתתפים מחוברים: <span id="welcome-live-voters" style="color:var(--accent); font-weight:bold;">...</span>
+            </div>
         </div>
         <div class="prompt-header" id="header-labels">
             <span id="prompt-text">דרגו את התמונה המצחיקה ביותר</span>
@@ -339,6 +303,7 @@
         <img id="main-image" src="" alt="תמונה">
     </div>
 
+    <!-- בר שליטה - משנה גודל/נעלם בצורה חלקה -->
     <div id="controls-bar" class="controls-area">
         <div id="user-ui">
             <div id="rating-container">
@@ -354,30 +319,28 @@
                     <button class="rate-btn btn-9" onclick="submitRating(9)">9</button>
                     <button class="rate-btn btn-10" onclick="submitRating(10)">10</button>
                 </div>
-                <div style="font-size: 0.8rem; color: #888; margin-top: 8px;">
+                <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">
                     מדרגים איתך: <span id="live-voters" style="color:var(--accent); font-weight:bold;">0</span>
                 </div>
             </div>
             <div id="voted-msg" class="voted-msg hidden">נשלח! ✅</div>
         </div>
-        <div id="admin-notice" class="hidden" style="color:#888; font-size: 0.9rem; padding: 10px;">
-            מצב אדמין פעיל - הדירוג חסום עבורך
+        <div id="admin-notice" class="hidden" style="color:#888; font-size: 0.8rem; padding: 5px;">
+            מצב אדמין
         </div>
     </div>
 </div>
 
 <div id="summary-screen">
     <div style="max-width: 600px; margin: 0 auto;">
-        <h1 style="color:var(--gold); font-size: 2.5rem; margin-bottom: 10px;">היכל התהילה</h1>
+        <h1 style="color:var(--gold); font-size: 2rem; margin-bottom: 10px;">היכל התהילה</h1>
         <div id="winner-list"></div>
-        <button onclick="location.reload()" style="margin:40px 0; background:transparent; border: 1px solid #444; color:white; width:100%; height:55px; font-weight:bold; border-radius:15px; cursor:pointer;">חזרה למשחק</button>
+        <button onclick="location.reload()" style="margin:30px 0; background:transparent; border: 1px solid #444; color:white; width:100%; height:50px; font-weight:bold; border-radius:15px;">חזרה</button>
     </div>
 </div>
 
 <script>
-    // קישור סאונד מותאם אישית (Raw Link)
     const CUSTOM_VOTE_SOUND_URL = "https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3";
-
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
         authDomain: "my-rating-game.firebaseapp.com",
@@ -391,12 +354,12 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // עדכון כמות התמונות ל-197
     const totalImages = 197;
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
     const welcomeBox = document.getElementById('welcome-box');
     const headerLabels = document.getElementById('header-labels');
+    const controlsBar = document.getElementById('controls-bar');
     const nextSound = document.getElementById('next-sound');
     const voteSound = document.getElementById('vote-received-sound');
     const bgMusic = document.getElementById('bg-music');
@@ -409,23 +372,37 @@
     let votedImageIds = new Set();
     let firstLoadDone = false;
 
+    // Presence system
+    const presenceRef = db.ref("presence");
+    const myPresenceRef = presenceRef.push();
+    db.ref(".info/connected").on("value", (snap) => {
+        if (snap.val() === true) {
+            myPresenceRef.onDisconnect().remove();
+            myPresenceRef.set(true);
+        }
+    });
+
+    presenceRef.on("value", (snap) => {
+        const count = snap.numChildren();
+        document.getElementById('welcome-live-voters').innerText = count;
+        if (currentStep === 0) document.getElementById('live-voters').innerText = count;
+    });
+
     if (isAdmin) {
         document.getElementById('hamburger').style.display = 'block';
         document.getElementById('nav-prev').style.display = 'flex';
         document.getElementById('nav-next').style.display = 'flex';
         document.getElementById('user-ui').classList.add('hidden');
         document.getElementById('admin-notice').classList.remove('hidden');
-        document.getElementById('controls-bar').classList.add('admin-mode');
         
         db.ref('ratings').on('child_changed', () => { if (firstLoadDone) playVoteSound(); });
         db.ref('ratings').on('child_added', () => { if (firstLoadDone) playVoteSound(); });
-        
         setTimeout(() => { firstLoadDone = true; }, 2000);
     }
 
     function playVoteSound() {
         voteSound.currentTime = 0;
-        voteSound.play().catch(e => console.log("Sound error:", e));
+        voteSound.play().catch(() => {});
     }
 
     function toggleMenu() {
@@ -440,7 +417,6 @@
             bgMusic.play().catch(() => {});
             musicStarted = true;
         }
-        voteSound.play().then(() => { voteSound.pause(); voteSound.currentTime = 0; }).catch(() => {});
     }
 
     function shuffleArray(array) {
@@ -477,35 +453,44 @@
                 welcomeBox.style.display = 'block';
                 imgElement.style.display = 'none';
                 headerLabels.style.display = 'none';
-                document.getElementById('controls-bar').style.visibility = 'hidden';
+                // הסתרת האזור התחתון במסך פתיחה
+                controlsBar.classList.add('collapsed');
             } else {
                 welcomeBox.style.display = 'none';
                 imgElement.style.display = 'block';
                 headerLabels.style.display = 'block';
-                document.getElementById('controls-bar').style.visibility = 'visible';
-                // הנתיב לתמונות - מוודא שהסיומת תואמת לקבצים שלך
+                
+                // החזרת האזור התחתון רק אם זה לא אדמין
+                if (!isAdmin) {
+                    controlsBar.classList.remove('collapsed');
+                    if (votedImageIds.has(imgId)) {
+                        document.getElementById('rating-container').classList.add('hidden');
+                        document.getElementById('voted-msg').classList.remove('hidden');
+                    } else {
+                        document.getElementById('rating-container').classList.remove('hidden');
+                        document.getElementById('voted-msg').classList.add('hidden');
+                    }
+                } else {
+                    // אדמין - שומרים על אזור קטן או מוסתר
+                    controlsBar.classList.remove('collapsed');
+                }
+                
                 imgElement.src = `images/jpg-${imgId}.JPG`;
                 imgElement.onload = () => imgElement.classList.add('show');
+                listenToLiveVoters(imgId);
             }
             document.getElementById('menu-img-index').innerText = `${currentStep} / ${totalImages}`;
-            if (!isAdmin) {
-                if (votedImageIds.has(imgId)) {
-                    document.getElementById('rating-container').classList.add('hidden');
-                    document.getElementById('voted-msg').classList.remove('hidden');
-                } else {
-                    document.getElementById('rating-container').classList.remove('hidden');
-                    document.getElementById('voted-msg').classList.add('hidden');
-                }
-            }
-            listenToLiveVoters(imgId);
             if (isAdmin) updateAdminStats(imgId);
         }, 200);
     }
 
     function listenToLiveVoters(id) {
+        db.ref(`ratings/${id}`).off('value');
         db.ref(`ratings/${id}`).on('value', (snap) => {
-            const count = snap.val() ? Object.keys(snap.val()).length : 0;
-            document.getElementById('live-voters').innerText = count;
+            if (currentStep !== 0) {
+                const count = snap.val() ? Object.keys(snap.val()).length : 0;
+                document.getElementById('live-voters').innerText = count;
+            }
         });
     }
 
@@ -530,7 +515,7 @@
     }
 
     function resetGame() {
-        if(confirm("🗑️ זה ימחק את כל הדירוגים ויגריל סדר תמונות חדש. להמשיך?")) {
+        if(confirm("איפוס הכל?")) {
             const newOrder = shuffleArray(Array.from({length: totalImages}, (_, i) => i + 1));
             db.ref('ratings').remove();
             db.ref('gameState').set({ order: newOrder, currentStep: 0 });
@@ -551,7 +536,7 @@
     function calculateWinners() {
         db.ref('ratings').once('value', (snap) => {
             const allRatings = snap.val();
-            if (!allRatings) return alert("אין נתונים עדיין.");
+            if (!allRatings) return;
             let results = [];
             for (let id in allRatings) {
                 if (parseInt(id) === 0) continue;
@@ -564,9 +549,9 @@
             list.innerHTML = "";
             const rankStyles = [
                 { class: 'rank-1', icon: '👑', color: 'var(--gold)', text: 'המצחיקה ביותר!' },
-                { class: 'rank-2', icon: '🥈', color: 'var(--silver)', text: 'במקום השני' },
-                { class: 'rank-3', icon: '🥉', color: 'var(--bronze)', text: 'במקום השלישי' },
-                { class: 'rank-4', icon: '🏅', color: '#444', text: 'מקום רביעי' }
+                { class: 'rank-2', icon: '🥈', color: 'var(--silver)', text: 'מקום 2' },
+                { class: 'rank-3', icon: '🥉', color: 'var(--bronze)', text: 'מקום 3' },
+                { class: 'rank-4', icon: '🏅', color: '#888', text: 'מקום 4' }
             ];
             winners.forEach((w, i) => {
                 const style = rankStyles[i];
@@ -575,11 +560,11 @@
                 card.style.animationDelay = `${i * 0.2}s`;
                 card.innerHTML = `
                     <div class="badge" style="color:${style.color}">${style.icon}</div>
-                    <img src="images/jpg-${w.id}.JPG" class="winner-img" onerror="this.src='https://via.placeholder.com/400?text=Error'">
+                    <img src="images/jpg-${w.id}.JPG" class="winner-img">
                     <div class="winner-info">
                         <div style="text-align:right;">
-                            <div class="winner-rank-text" style="color:${style.color}">${style.text}</div>
-                            <div class="winner-label">תמונה #${w.id}</div>
+                            <div style="color:${style.color}; font-weight:bold;">${style.text}</div>
+                            <div style="font-size:0.8rem;">תמונה #${w.id}</div>
                         </div>
                         <div class="winner-score">${w.score} <small>נק'</small></div>
                     </div>
