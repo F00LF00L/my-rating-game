@@ -58,7 +58,7 @@
         }
         #main-image.show { opacity: 1; }
 
-        /* מסך פתיחה - משופר וגדול יותר */
+        /* מסך פתיחה */
         #welcome-box {
             display: none;
             width: 95%;
@@ -310,7 +310,7 @@
 <div id="side-menu" class="side-menu">
     <h2 style="color:var(--accent); border-bottom: 1px solid #444; padding-bottom: 10px;">ניהול משחק</h2>
     <div style="margin: 10px 0;">
-        <div>התקדמות: <b id="menu-img-index">0 / 96</b></div>
+        <div>התקדמות: <b id="menu-img-index">0 / 197</b></div>
         <div>סך ניקוד לתמונה: <b id="menu-total-score" style="color:var(--accent)">0</b></div>
     </div>
     <button onclick="calculateWinners()" class="menu-btn btn-win">🏆 הצג תוצאות סופיות</button>
@@ -375,7 +375,7 @@
 </div>
 
 <script>
-    // קישור סאונד מותאם אישית מה-GitHub שלך (Raw Link)
+    // קישור סאונד מותאם אישית (Raw Link)
     const CUSTOM_VOTE_SOUND_URL = "https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3";
 
     const firebaseConfig = {
@@ -391,7 +391,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const totalImages = 96;
+    // עדכון כמות התמונות ל-197
+    const totalImages = 197;
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
     const welcomeBox = document.getElementById('welcome-box');
@@ -400,7 +401,6 @@
     const voteSound = document.getElementById('vote-received-sound');
     const bgMusic = document.getElementById('bg-music');
     
-    // עדכון מקור הסאונד
     voteSound.src = CUSTOM_VOTE_SOUND_URL;
     
     let currentStep = -1;
@@ -417,26 +417,15 @@
         document.getElementById('admin-notice').classList.remove('hidden');
         document.getElementById('controls-bar').classList.add('admin-mode');
         
-        // האזנה לדירוגים חדשים להשמעת סאונד
-        db.ref('ratings').on('child_changed', (snapshot) => {
-            if (firstLoadDone) playVoteSound();
-        });
-        db.ref('ratings').on('child_added', (snapshot) => {
-            if (firstLoadDone) playVoteSound();
-        });
+        db.ref('ratings').on('child_changed', () => { if (firstLoadDone) playVoteSound(); });
+        db.ref('ratings').on('child_added', () => { if (firstLoadDone) playVoteSound(); });
         
-        // מניעת רצף סאונד בטעינה הראשונית של הדף
         setTimeout(() => { firstLoadDone = true; }, 2000);
     }
 
     function playVoteSound() {
         voteSound.currentTime = 0;
-        const playPromise = voteSound.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.log("Auto-play was prevented. Click anywhere to enable sound.");
-            });
-        }
+        voteSound.play().catch(e => console.log("Sound error:", e));
     }
 
     function toggleMenu() {
@@ -451,11 +440,7 @@
             bgMusic.play().catch(() => {});
             musicStarted = true;
         }
-        // "חימום" ערוץ הסאונד כדי לאפשר השמעה אוטומטית בהמשך
-        voteSound.play().then(() => { 
-            voteSound.pause(); 
-            voteSound.currentTime = 0; 
-        }).catch(() => {});
+        voteSound.play().then(() => { voteSound.pause(); voteSound.currentTime = 0; }).catch(() => {});
     }
 
     function shuffleArray(array) {
@@ -498,6 +483,7 @@
                 imgElement.style.display = 'block';
                 headerLabels.style.display = 'block';
                 document.getElementById('controls-bar').style.visibility = 'visible';
+                // הנתיב לתמונות - מוודא שהסיומת תואמת לקבצים שלך
                 imgElement.src = `images/jpg-${imgId}.JPG`;
                 imgElement.onload = () => imgElement.classList.add('show');
             }
