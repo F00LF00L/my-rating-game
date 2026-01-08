@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Photo Rating - Premium 200 Edition</title>
+    <title>Photo Rating - 200 Complete Rankings</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
@@ -21,10 +21,7 @@
             --glass-border: rgba(255, 255, 255, 0.1);
         }
         
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
             font-family: 'Assistant', sans-serif; 
@@ -40,7 +37,6 @@
             overflow: hidden;
         }
 
-        /* --- Image display area with animations --- */
         .img-display-area {
             flex: 1;
             display: flex;
@@ -57,19 +53,15 @@
             max-width: 100%; 
             max-height: 100%;
             object-fit: contain; 
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s ease-out;
             opacity: 0;
             transform: scale(0.95);
             border-radius: 12px;
             display: none;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        #main-image.show { 
-            opacity: 1; 
-            transform: scale(1);
-        }
+        #main-image.show { opacity: 1; transform: scale(1); }
 
-        /* --- Modern Welcome Box --- */
         #welcome-box {
             display: none;
             width: 90%;
@@ -79,7 +71,6 @@
             border-radius: 40px;
             background: rgba(20, 20, 20, 0.8);
             backdrop-filter: blur(20px);
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.15), inset 0 0 20px rgba(255,255,255,0.02);
             z-index: 30;
             animation: welcomeEntry 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -96,147 +87,55 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 25px;
             font-weight: 800;
-            letter-spacing: -1px;
         }
 
-        .welcome-body {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            color: #ccc;
-        }
+        .highlight { color: var(--accent); font-weight: bold; }
 
-        .highlight { 
-            color: var(--accent); 
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        /* --- Floating Headers --- */
         .prompt-header {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(10px);
-            padding: 10px 25px;
-            border-radius: 100px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--accent);
-            z-index: 20;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: none;
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(10px);
+            padding: 10px 25px; border-radius: 100px; font-size: 1rem;
+            font-weight: 600; color: var(--accent); z-index: 20;
+            border: 1px solid var(--glass-border); display: none;
         }
 
-        /* --- Styled Navigation --- */
         .side-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: white;
-            width: 55px;
-            height: 90px;
-            font-size: 1.8rem;
-            cursor: pointer;
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: var(--glass); border: 1px solid var(--glass-border);
+            color: white; width: 55px; height: 90px; font-size: 1.8rem;
+            cursor: pointer; z-index: 100; display: none; align-items: center; justify-content: center;
         }
-        .side-nav:active { background: rgba(255,255,255,0.2); transform: translateY(-50%) scale(0.9); }
         .nav-right { right: 0; border-radius: 20px 0 0 20px; }
         .nav-left { left: 0; border-radius: 0 20px 20px 0; }
 
-        /* --- Sidebar Menu --- */
         .hamburger {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 200;
-            cursor: pointer;
-            background: var(--glass);
-            padding: 12px;
-            border-radius: 15px;
-            display: none;
-            border: 1px solid var(--glass-border);
+            position: absolute; top: 20px; right: 20px; z-index: 200; cursor: pointer;
+            background: var(--glass); padding: 12px; border-radius: 15px; display: none;
         }
 
         .side-menu {
-            position: fixed;
-            top: 0; right: -320px; width: 300px; height: 100%;
-            background: #0a0a0a; z-index: 250; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px; box-shadow: -10px 0 40px rgba(0,0,0,0.8);
-            display: flex; flex-direction: column; gap: 20px; text-align: right;
+            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
+            background: #0a0a0a; z-index: 250; transition: 0.4s ease;
+            padding: 30px; display: flex; flex-direction: column; gap: 20px; text-align: right;
             border-left: 1px solid var(--glass-border);
         }
         .side-menu.open { right: 0; }
         
-        .menu-btn {
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .menu-btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
 
-        /* --- Modern Controls Area --- */
         .controls-area {
-            background: #080808;
-            padding: 20px 15px;
-            border-top: 1px solid var(--glass-border);
-            flex-shrink: 0;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 250px;
-            position: relative;
+            background: #080808; padding: 20px 15px; border-top: 1px solid var(--glass-border);
+            flex-shrink: 0; transition: 0.5s; max-height: 250px; position: relative;
         }
-        .controls-area.collapsed {
-            padding: 0;
-            max-height: 0;
-            border: none;
-            opacity: 0;
-        }
+        .controls-area.collapsed { padding: 0; max-height: 0; border: none; opacity: 0; }
 
-        .rating-btns { 
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr); 
-            gap: 12px; 
-            max-width: 550px;
-            margin: 0 auto;
-        }
+        .rating-btns { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 500px; margin: 0 auto; }
 
         button.rate-btn { 
-            height: 55px; 
-            border: none; 
-            border-radius: 16px; 
-            cursor: pointer; 
-            color: #000; 
-            font-weight: 800; 
-            font-size: 1.3rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.3);
+            height: 50px; border: none; border-radius: 12px; cursor: pointer; 
+            color: #000; font-weight: 800; font-size: 1.2rem; transition: 0.2s;
         }
-
-        button.rate-btn:active {
-            transform: scale(0.9);
-            filter: brightness(1.2);
-        }
-
-        button.rate-btn::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 40%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
-            pointer-events: none;
-        }
+        button.rate-btn:active { transform: scale(0.9); }
 
         .btn-1 { background: #ff4d4d; } .btn-2 { background: #ff751a; }
         .btn-3 { background: #ff944d; } .btn-4 { background: #ffad33; }
@@ -244,59 +143,40 @@
         .btn-7 { background: #bcff33; } .btn-8 { background: #92ff33; }
         .btn-9 { background: #69ff33; } .btn-10 { background: #33ff33; }
 
-        .voted-msg { 
-            color: var(--accent); 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            padding: 20px 0;
-            animation: pulse 1.5s infinite;
-        }
+        .voted-msg { color: var(--accent); font-size: 1.5rem; font-weight: bold; padding: 20px 0; }
+        .hidden { display: none !important; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-
-        /* --- Summary Screen --- */
         #summary-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 1000;
-            padding: 40px 20px;
-            overflow-y: auto;
-            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 1000; padding: 40px 20px; overflow-y: auto; display: none;
+        }
+        
+        /* Grid for all rankings */
+        .rankings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 20px 0;
         }
 
         .winner-card {
-            background: #111; border-radius: 24px; overflow: hidden; margin-bottom: 30px;
-            position: relative; border: 1px solid var(--glass-border);
-            animation: winnerSlide 0.8s cubic-bezier(0.2, 1, 0.3, 1) both;
+            background: #111; border-radius: 15px; overflow: hidden;
+            border: 1px solid var(--glass-border); position: relative;
+            transition: transform 0.3s;
         }
+        
+        /* Highlight top 3 */
+        .winner-card.top-1 { border: 2px solid var(--gold); transform: scale(1.05); z-index: 5; }
+        .winner-card.top-2 { border: 2px solid var(--silver); }
+        .winner-card.top-3 { border: 2px solid var(--bronze); }
 
-        @keyframes winnerSlide {
-            from { opacity: 0; transform: translateY(50px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .winner-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .winner-info { padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; background: rgba(0,0,0,0.5); }
+        .rank-badge {
+            position: absolute; top: 5px; right: 5px; 
+            background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: bold; border: 1px solid var(--glass-border);
         }
-
-        .winner-card.rank-1 { 
-            border: 2px solid var(--gold); 
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
-        }
-
-        .badge {
-            position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
-            background: rgba(0,0,0,0.8); border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 1.5rem; z-index: 2;
-            border: 2px solid currentColor; backdrop-filter: blur(5px);
-        }
-
-        .winner-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
-        .winner-info { padding: 20px; background: linear-gradient(to top, #000, transparent); margin-top: -80px; position: relative; display: flex; justify-content: space-between; align-items: flex-end; }
-        .winner-score { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
-
-        .hidden { display: none !important; }
     </style>
 </head>
 <body onclick="handleInteraction()">
@@ -311,16 +191,16 @@
     <div style="width:25px; height:2px; background:white; margin:5px 0;"></div>
 </div>
 
-<div id="menu-overlay" class="menu-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; z-index:240;" onclick="toggleMenu()"></div>
+<div id="menu-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; z-index:240;" onclick="toggleMenu()"></div>
 <div id="side-menu" class="side-menu">
-    <h2 style="color:var(--accent); font-weight:800; border-bottom: 1px solid #333; padding-bottom: 15px;">ניהול משחק</h2>
+    <h2 style="color:var(--accent);">ניהול</h2>
     <div style="background:var(--glass); padding:15px; border-radius:15px;">
-        <div style="margin-bottom:10px; color:#aaa;">התקדמות: <b id="menu-img-index" style="color:#fff">0 / 200</b></div>
-        <div>ניקוד נוכחי: <b id="menu-total-score" style="color:var(--accent); font-size:1.2rem;">0</b></div>
+        <div style="margin-bottom:10px;">תמונה: <b id="menu-img-index">0 / 200</b></div>
+        <div>ניקוד: <b id="menu-total-score" style="color:var(--accent);">0</b></div>
     </div>
-    <button onclick="calculateWinners()" style="background:var(--accent); color:black;" class="menu-btn">🏆 הצג תוצאות</button>
-    <button onclick="resetGame()" style="background:var(--danger); color:white;" class="menu-btn">🗑️ איפוס נתונים</button>
-    <button onclick="toggleMenu()" style="background:#222; color:white; margin-top:auto;" class="menu-btn">חזרה למשחק</button>
+    <button onclick="calculateWinners()" style="background:var(--accent); color:black;" class="menu-btn">🏆 הצגת הדירוג המלא</button>
+    <button onclick="resetGame()" style="background:var(--danger); color:white;" class="menu-btn">⚠️ איפוס הכל</button>
+    <button onclick="toggleMenu()" style="background:#222; color:white;" class="menu-btn">סגור</button>
 </div>
 
 <button id="nav-prev" class="side-nav nav-left" onclick="prevImage()">❯</button>
@@ -330,18 +210,10 @@
     <div class="img-display-area">
         <div id="welcome-box">
             <div class="welcome-title">המשחק של יונצ'י!</div>
-            <div class="welcome-body">
-                ברוכים הבאים למשפחת <span class="highlight">חשB</span> <br><br>
-                דרגו 200 תמונות לפי רמת הצחוק 🎭 <br><br>
-                <span class="highlight">טיפ חשוב:</span> אל תדרגו סתם מספרים גבוהים, זה יהרוס את התחרות!
-            </div>
-            <div style="margin-top: 35px; font-size: 1rem; color: #888; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 100px;">
-                משתתפים בחדר: <span id="welcome-live-voters" style="color:var(--accent); font-weight:bold;">...</span>
-            </div>
+            <div style="font-size: 1.2rem;">דרגו <span class="highlight">200</span> תמונות מצחיקות</div>
+            <div style="margin-top:20px; color:#888;">משתתפים: <span id="welcome-live-voters" class="highlight">...</span></div>
         </div>
-        <div class="prompt-header" id="header-labels">
-            <span id="prompt-text">איזו תמונה הכי מצחיקה?</span>
-        </div>
+        <div class="prompt-header" id="header-labels">מה הציון של התמונה?</div>
         <img id="main-image" src="" alt="Photo">
     </div>
 
@@ -360,28 +232,20 @@
                     <button class="rate-btn btn-9" onclick="submitRating(9)">9</button>
                     <button class="rate-btn btn-10" onclick="submitRating(10)">10</button>
                 </div>
-                <div style="font-size: 0.8rem; color: #555; margin-top: 15px;">
-                    מצביעים כרגע: <span id="live-voters" style="color:var(--accent); font-weight:bold;">0</span>
-                </div>
             </div>
-            <div id="voted-msg" class="voted-msg hidden">הדירוג נשלח בהצלחה! ✨</div>
-        </div>
-        <div id="admin-notice" class="hidden" style="color:#555; font-size: 0.8rem; letter-spacing: 2px;">
-            CONSOLE : ADMIN_MODE
+            <div id="voted-msg" class="voted-msg hidden">נשלח! ממתינים לתמונה הבאה... ⏳</div>
         </div>
     </div>
 </div>
 
 <div id="summary-screen">
-    <div style="max-width: 600px; margin: 0 auto;">
-        <h1 style="color:var(--accent); font-size: 2.5rem; margin-bottom: 30px; font-weight:800;">התמונות המנצחות</h1>
-        <div id="winner-list"></div>
-        <button onclick="location.reload()" style="margin:40px 0; background:var(--glass); border: 1px solid var(--glass-border); color:white; width:100%; height:60px; font-weight:bold; border-radius:20px; cursor:pointer;">סיום וסגירה</button>
-    </div>
+    <h1 style="color:var(--accent); font-weight:800;">הדירוג הסופי</h1>
+    <p style="color:#888;">מוצג מהמקום הראשון ועד האחרון</p>
+    <div id="winner-list" class="rankings-grid"></div>
+    <button onclick="location.reload()" style="margin: 30px 0; width:200px; height:50px; border-radius:10px; cursor:pointer; background:#222; color:white; border:1px solid #444;">חזור למשחק</button>
 </div>
 
 <script>
-    const CUSTOM_VOTE_SOUND_URL = "https://github.com/F00LF00L/my-rating-game/raw/refs/heads/main/vote.mp3";
     const firebaseConfig = {
         apiKey: "AIzaSyChEKlmRA-8gGG6hytsoAjlbf69EQq9UsY",
         authDomain: "my-rating-game.firebaseapp.com",
@@ -395,7 +259,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const totalImages = 200; // Updated to 200
+    const totalImages = 200; 
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
     const welcomeBox = document.getElementById('welcome-box');
@@ -405,59 +269,34 @@
     const voteSound = document.getElementById('vote-received-sound');
     const bgMusic = document.getElementById('bg-music');
     
-    voteSound.src = CUSTOM_VOTE_SOUND_URL;
-    
     let currentStep = -1;
     let randomOrder = [];
-    let musicStarted = false;
     let votedImageIds = new Set();
-    let firstLoadDone = false;
+    let musicStarted = false;
 
-    // Presence system
+    // Presence
     const presenceRef = db.ref("presence");
     const myPresenceRef = presenceRef.push();
-    db.ref(".info/connected").on("value", (snap) => {
-        if (snap.val() === true) {
-            myPresenceRef.onDisconnect().remove();
-            myPresenceRef.set(true);
-        }
-    });
-
-    presenceRef.on("value", (snap) => {
-        const count = snap.numChildren();
-        document.getElementById('welcome-live-voters').innerText = count;
-        if (currentStep === 0) document.getElementById('live-voters').innerText = count;
-    });
+    db.ref(".info/connected").on("value", s => { if(s.val()) { myPresenceRef.onDisconnect().remove(); myPresenceRef.set(true); }});
+    presenceRef.on("value", s => { document.getElementById('welcome-live-voters').innerText = s.numChildren(); });
 
     if (isAdmin) {
         document.getElementById('hamburger').style.display = 'block';
         document.getElementById('nav-prev').style.display = 'flex';
         document.getElementById('nav-next').style.display = 'flex';
         document.getElementById('user-ui').classList.add('hidden');
-        document.getElementById('admin-notice').classList.remove('hidden');
         
-        db.ref('ratings').on('child_changed', () => { if (firstLoadDone) playVoteSound(); });
-        db.ref('ratings').on('child_added', () => { if (firstLoadDone) playVoteSound(); });
-        setTimeout(() => { firstLoadDone = true; }, 2000);
-    }
-
-    function playVoteSound() {
-        voteSound.currentTime = 0;
-        voteSound.play().catch(() => {});
+        db.ref('ratings').on('child_changed', () => voteSound.play().catch(()=>{}));
+        db.ref('ratings').on('child_added', () => voteSound.play().catch(()=>{}));
     }
 
     function toggleMenu() {
         document.getElementById('side-menu').classList.toggle('open');
-        document.getElementById('menu-overlay').style.display = 
-            document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none';
+        document.getElementById('menu-overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none';
     }
 
     function handleInteraction() {
-        if (isAdmin && !musicStarted) {
-            bgMusic.volume = 0.15;
-            bgMusic.play().catch(() => {});
-            musicStarted = true;
-        }
+        if (isAdmin && !musicStarted) { bgMusic.volume = 0.1; bgMusic.play(); musicStarted = true; }
     }
 
     function shuffleArray(array) {
@@ -470,7 +309,7 @@
 
     db.ref('gameState').on('value', (snap) => {
         const state = snap.val();
-        if (!state || !state.order) {
+        if (!state || !state.order || state.order.length < totalImages) {
             if (isAdmin) {
                 const newOrder = shuffleArray(Array.from({length: totalImages}, (_, i) => i + 1));
                 db.ref('gameState').set({ order: newOrder, currentStep: 0 });
@@ -479,10 +318,9 @@
         }
         randomOrder = state.order;
         const newStep = state.currentStep;
-        if (isAdmin && currentStep !== -1 && newStep !== currentStep) {
-            nextSound.play().catch(() => {});
-        }
+        if (isAdmin && currentStep !== -1 && newStep > currentStep) nextSound.play().catch(()=>{});
         currentStep = newStep;
+        
         const actualImgId = currentStep === 0 ? 0 : randomOrder[currentStep - 1];
         updateUI(actualImgId);
     });
@@ -499,63 +337,41 @@
                 welcomeBox.style.display = 'none';
                 imgElement.style.display = 'block';
                 headerLabels.style.display = 'block';
-                
                 if (!isAdmin) {
                     controlsBar.classList.remove('collapsed');
-                    if (votedImageIds.has(imgId)) {
-                        document.getElementById('rating-container').classList.add('hidden');
-                        document.getElementById('voted-msg').classList.remove('hidden');
-                    } else {
-                        document.getElementById('rating-container').classList.remove('hidden');
-                        document.getElementById('voted-msg').classList.add('hidden');
-                    }
+                    const isVoted = votedImageIds.has(imgId);
+                    document.getElementById('rating-container').style.display = isVoted ? 'none' : 'block';
+                    document.getElementById('voted-msg').classList.toggle('hidden', !isVoted);
                 } else {
                     controlsBar.classList.remove('collapsed');
                 }
-                
                 imgElement.src = `images/jpg-${imgId}.JPG`;
                 imgElement.onload = () => imgElement.classList.add('show');
-                listenToLiveVoters(imgId);
             }
             document.getElementById('menu-img-index').innerText = `${currentStep} / ${totalImages}`;
-            if (isAdmin) updateAdminStats(imgId);
-        }, 200);
-    }
-
-    function listenToLiveVoters(id) {
-        db.ref(`ratings/${id}`).off('value');
-        db.ref(`ratings/${id}`).on('value', (snap) => {
-            if (currentStep !== 0) {
-                const count = snap.val() ? Object.keys(snap.val()).length : 0;
-                document.getElementById('live-voters').innerText = count;
-            }
-        });
+            if (isAdmin && imgId > 0) updateAdminStats(imgId);
+        }, 300);
     }
 
     function submitRating(val) {
         if (isAdmin || currentStep === 0) return;
         const actualImgId = randomOrder[currentStep - 1];
         if (votedImageIds.has(actualImgId)) return;
-        
         votedImageIds.add(actualImgId);
         db.ref(`ratings/${actualImgId}`).push(val);
-        document.getElementById('rating-container').classList.add('hidden');
+        document.getElementById('rating-container').style.display = 'none';
         document.getElementById('voted-msg').classList.remove('hidden');
     }
 
     function nextImage() { 
-        db.ref('gameState/currentStep').transaction(s => {
-            const next = (s || 0) + 1;
-            return next > totalImages ? s : next;
-        }); 
+        db.ref('gameState/currentStep').transaction(s => (s < totalImages ? (s || 0) + 1 : s)); 
     }
-    
     function prevImage() { 
         db.ref('gameState/currentStep').transaction(s => (s > 0 ? s - 1 : 0)); 
     }
 
     function resetGame() {
-        if(confirm("למחוק את כל הדירוגים ולהתחיל מחדש?")) {
+        if(confirm("איפוס ימחק הכל ויערבב מחדש את 200 התמונות. להמשיך?")) {
             const newOrder = shuffleArray(Array.from({length: totalImages}, (_, i) => i + 1));
             db.ref('ratings').remove();
             db.ref('gameState').set({ order: newOrder, currentStep: 0 });
@@ -565,52 +381,54 @@
     }
 
     function updateAdminStats(id) {
-        db.ref(`ratings/${id}`).on('value', (snap) => {
-            let data = snap.val();
+        db.ref(`ratings/${id}`).on('value', snap => {
             let sum = 0;
-            if (data) sum = Object.values(data).reduce((a, b) => a + b, 0);
+            if (snap.val()) sum = Object.values(snap.val()).reduce((a, b) => a + b, 0);
             document.getElementById('menu-total-score').innerText = sum;
         });
     }
 
     function calculateWinners() {
-        db.ref('ratings').once('value', (snap) => {
-            const allRatings = snap.val();
-            if (!allRatings) return;
-            let results = [];
-            for (let id in allRatings) {
-                if (parseInt(id) === 0) continue;
-                let scores = Object.values(allRatings[id]);
-                results.push({ id: id, score: scores.reduce((a, b) => a + b, 0) });
+        db.ref('ratings').once('value', snap => {
+            const data = snap.val();
+            if (!data) return;
+            
+            let res = [];
+            for (let id in data) {
+                if(id === "0") continue;
+                res.push({ 
+                    id, 
+                    score: Object.values(data[id]).reduce((a, b) => a + b, 0),
+                    votes: Object.values(data[id]).length 
+                });
             }
-            results.sort((a, b) => b.score - a.score);
-            const winners = results.slice(0, 4);
+            
+            // Sort by score descending
+            res.sort((a, b) => b.score - a.score);
+            
             const list = document.getElementById('winner-list');
             list.innerHTML = "";
-            const rankStyles = [
-                { icon: '👑', color: 'var(--gold)', label: 'הכי מצחיק!' },
-                { icon: '🥈', color: 'var(--silver)', label: 'מקום שני' },
-                { icon: '🥉', color: 'var(--bronze)', label: 'מקום שלישי' },
-                { icon: '🏅', color: '#888', label: 'מקום רביעי' }
-            ];
-            winners.forEach((w, i) => {
-                const s = rankStyles[i];
+            
+            res.forEach((w, i) => {
+                const rank = i + 1;
+                let topClass = "";
+                if (rank === 1) topClass = "top-1";
+                else if (rank === 2) topClass = "top-2";
+                else if (rank === 3) topClass = "top-3";
+                
                 const card = document.createElement('div');
-                card.className = `winner-card ${i === 0 ? 'rank-1' : ''}`;
-                card.style.animationDelay = `${i * 0.15}s`;
+                card.className = `winner-card ${topClass}`;
                 card.innerHTML = `
-                    <div class="badge" style="color:${s.color}">${s.icon}</div>
-                    <img src="images/jpg-${w.id}.JPG" class="winner-img">
+                    <div class="rank-badge">#${rank}</div>
+                    <img src="images/jpg-${w.id}.JPG" class="winner-img" loading="lazy">
                     <div class="winner-info">
-                        <div>
-                            <div style="color:${s.color}; font-weight:800; font-size:1.2rem;">${s.label}</div>
-                            <div style="color:#888; font-size:0.9rem;">תמונה #${w.id}</div>
-                        </div>
-                        <div class="winner-score">${w.score} <small style="font-size:0.8rem; opacity:0.6;">נק'</small></div>
+                        <b style="color:var(--accent); font-size:1.1rem;">${w.score} נק'</b>
+                        <span style="color:#888; font-size:0.7rem;">(${w.votes} מצביעים)</span>
                     </div>
                 `;
                 list.appendChild(card);
             });
+            
             document.getElementById('main-view').style.display = 'none';
             document.getElementById('summary-screen').style.display = 'block';
             toggleMenu();
