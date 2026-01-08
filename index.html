@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Photo Rating - Premium Edition</title>
+    <title>Photo Rating - Premium 200 Edition</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@
             overflow: hidden;
         }
 
-        /* --- תצוגת תמונה מרכזית עם אנימציה --- */
+        /* --- Image display area with animations --- */
         .img-display-area {
             flex: 1;
             display: flex;
@@ -69,7 +69,7 @@
             transform: scale(1);
         }
 
-        /* --- מסך פתיחה משודרג --- */
+        /* --- Modern Welcome Box --- */
         #welcome-box {
             display: none;
             width: 90%;
@@ -111,7 +111,7 @@
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
-        /* --- כותרות צפות --- */
+        /* --- Floating Headers --- */
         .prompt-header {
             position: absolute;
             top: 20px;
@@ -130,7 +130,7 @@
             display: none;
         }
 
-        /* --- כפתורי ניווט מעוצבים --- */
+        /* --- Styled Navigation --- */
         .side-nav {
             position: absolute;
             top: 50%;
@@ -153,7 +153,7 @@
         .nav-right { right: 0; border-radius: 20px 0 0 20px; }
         .nav-left { left: 0; border-radius: 0 20px 20px 0; }
 
-        /* --- תפריט צד --- */
+        /* --- Sidebar Menu --- */
         .hamburger {
             position: absolute;
             top: 20px;
@@ -186,7 +186,7 @@
             transition: 0.2s;
         }
 
-        /* --- אזור כפתורים תחתון - מודרני --- */
+        /* --- Modern Controls Area --- */
         .controls-area {
             background: #080808;
             padding: 20px 15px;
@@ -211,7 +211,6 @@
             margin: 0 auto;
         }
 
-        /* כפתור דירוג - עיצוב הייטק */
         button.rate-btn { 
             height: 55px; 
             border: none; 
@@ -259,7 +258,7 @@
             100% { transform: scale(1); opacity: 0.8; }
         }
 
-        /* --- מסך סיכום משודרג --- */
+        /* --- Summary Screen --- */
         #summary-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -316,7 +315,7 @@
 <div id="side-menu" class="side-menu">
     <h2 style="color:var(--accent); font-weight:800; border-bottom: 1px solid #333; padding-bottom: 15px;">ניהול משחק</h2>
     <div style="background:var(--glass); padding:15px; border-radius:15px;">
-        <div style="margin-bottom:10px; color:#aaa;">התקדמות: <b id="menu-img-index" style="color:#fff">0 / 197</b></div>
+        <div style="margin-bottom:10px; color:#aaa;">התקדמות: <b id="menu-img-index" style="color:#fff">0 / 200</b></div>
         <div>ניקוד נוכחי: <b id="menu-total-score" style="color:var(--accent); font-size:1.2rem;">0</b></div>
     </div>
     <button onclick="calculateWinners()" style="background:var(--accent); color:black;" class="menu-btn">🏆 הצג תוצאות</button>
@@ -333,7 +332,7 @@
             <div class="welcome-title">המשחק של יונצ'י!</div>
             <div class="welcome-body">
                 ברוכים הבאים למשפחת <span class="highlight">חשB</span> <br><br>
-                דרגו תמונות לפי רמת הצחוק 🎭 <br><br>
+                דרגו 200 תמונות לפי רמת הצחוק 🎭 <br><br>
                 <span class="highlight">טיפ חשוב:</span> אל תדרגו סתם מספרים גבוהים, זה יהרוס את התחרות!
             </div>
             <div style="margin-top: 35px; font-size: 1rem; color: #888; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 100px;">
@@ -396,7 +395,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const totalImages = 197;
+    const totalImages = 200; // Updated to 200
     const isAdmin = window.location.search.includes('admin=true');
     const imgElement = document.getElementById('main-image');
     const welcomeBox = document.getElementById('welcome-box');
@@ -414,7 +413,7 @@
     let votedImageIds = new Set();
     let firstLoadDone = false;
 
-    // Presence
+    // Presence system
     const presenceRef = db.ref("presence");
     const myPresenceRef = presenceRef.push();
     db.ref(".info/connected").on("value", (snap) => {
